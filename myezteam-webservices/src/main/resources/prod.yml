@@ -1,0 +1,12 @@
+# AWS settings
+aws:
+  tablePrefix: PROD-
+
+
+server:
+  type: simple
+  connector:
+    type: http
+
+
+
