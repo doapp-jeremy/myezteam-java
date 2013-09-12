@@ -1,0 +1,1 @@
+web: java -cp target/classes:target/dependency/* -Ddw.server.connector.port=$PORT com.myezteam.application.WsApplication server src/main/resources/prod.yml
