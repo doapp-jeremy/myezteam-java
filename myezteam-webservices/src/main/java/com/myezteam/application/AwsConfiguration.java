@@ -1,4 +1,4 @@
-package com.doapps.ws.application;
+package com.myezteam.application;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import org.hibernate.validator.constraints.NotEmpty;

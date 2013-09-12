@@ -8,7 +8,7 @@
  *
  * Copyright 2013 - All rights reserved.  Created by DoApp, Inc.
  */
-package com.doapps.ws.application;
+package com.myezteam.application;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

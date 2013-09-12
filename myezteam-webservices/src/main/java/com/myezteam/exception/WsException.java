@@ -8,7 +8,7 @@
  *
  * Copyright 2013 - All rights reserved.  Created by DoApp, Inc.
  */
-package com.adagogo.selfserve.exception;
+package com.myezteam.exception;
 
 /**
  * @author jeremy

@@ -8,7 +8,7 @@
  *
  * Copyright 2013 - All rights reserved.  Created by DoApp, Inc.
  */
-package com.doapps.ws.application;
+package com.myezteam.application;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -16,12 +16,13 @@ import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration.Dynamic;
 import javax.ws.rs.ext.ExceptionMapper;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
-import com.adagogo.selfserve.exception.WsExceptionMapper;
 import com.codahale.dropwizard.Application;
 import com.codahale.dropwizard.jersey.setup.JerseyEnvironment;
 import com.codahale.dropwizard.setup.Bootstrap;
 import com.codahale.dropwizard.setup.Environment;
 import com.google.common.collect.ImmutableSet;
+import com.myezteam.exception.WsExceptionMapper;
+import com.myezteam.resource.UserResource;
 
 
 /**
@@ -55,7 +56,7 @@ public class WsApplication extends Application<WsConfiguration> {
     AwsConfiguration awsConfig = configuration.getAwsConfiguration();
 
     final JerseyEnvironment jerseyEnv = environment.jersey();
-    // jerseyEnv.register(new WsResource(awsConfig));
+    jerseyEnv.register(new UserResource());
 
     // 0.6.2 - Allow CORS:
     // https://groups.google.com/forum/#!msg/dropwizard-user/QYknyWOZmns/6YA8SmHSGu8J

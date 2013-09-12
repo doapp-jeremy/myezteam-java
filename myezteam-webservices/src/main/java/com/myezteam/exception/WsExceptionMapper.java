@@ -1,4 +1,4 @@
-package com.adagogo.selfserve.exception;
+package com.myezteam.exception;
 
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.WebApplicationException;

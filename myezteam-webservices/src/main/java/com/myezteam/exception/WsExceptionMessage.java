@@ -1,4 +1,4 @@
-package com.adagogo.selfserve.exception;
+package com.myezteam.exception;
 
 import java.util.ArrayList;
 import java.util.List;
