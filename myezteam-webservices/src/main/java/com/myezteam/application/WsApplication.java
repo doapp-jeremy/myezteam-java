@@ -22,7 +22,7 @@ import com.codahale.dropwizard.setup.Bootstrap;
 import com.codahale.dropwizard.setup.Environment;
 import com.google.common.collect.ImmutableSet;
 import com.myezteam.exception.WsExceptionMapper;
-import com.myezteam.resource.UserResource;
+import com.myezteam.resource.PersonaAuthResource;
 
 
 /**
@@ -56,7 +56,7 @@ public class WsApplication extends Application<WsConfiguration> {
     AwsConfiguration awsConfig = configuration.getAwsConfiguration();
 
     final JerseyEnvironment jerseyEnv = environment.jersey();
-    jerseyEnv.register(new UserResource());
+    jerseyEnv.register(new PersonaAuthResource());
 
     // 0.6.2 - Allow CORS:
     // https://groups.google.com/forum/#!msg/dropwizard-user/QYknyWOZmns/6YA8SmHSGu8J

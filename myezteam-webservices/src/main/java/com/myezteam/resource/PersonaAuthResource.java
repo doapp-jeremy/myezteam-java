@@ -28,34 +28,22 @@ import retrofit.http.Body;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.myezteam.application.WsEmailAuth;
 
 
 /**
  * @author jeremy
  * 
  */
-@Path("/users")
+@Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UserResource {
+public class PersonaAuthResource {
 
   @GET
   @Timed
   public List<String> list() {
     return Lists.newArrayList();
-  }
-
-  @Path("/login.js")
-  @GET
-  @Timed
-  @Produces(MediaType.TEXT_PLAIN)
-  public String loginJS() {
-    return "console.log('loaded');\n"
-        + "var signinLink = document.getElementById('signin');\n"
-        + "if (signinLink) { \nsigninLink.onclick = function() { navigator.id.request(); }; }\n"
-        + "var signoutLink = document.getElementById('signout');\n"
-        + "if (signoutLink) { \nsignoutLink.onclick = function() { navigator.id.logout(); }; }\n"
-        + "";
   }
 
   @Path("/login")
@@ -83,30 +71,32 @@ public class UserResource {
     public Map<String, String> verify(@Body Map<String, String> body);
   }
 
-  @Path("/login")
+  @Path("/persona/login")
   @POST
   @Timed
   public Map<String, String> login(Map<String, String> data) {
     try {
       String assertion = checkNotNull(data).get("assertion");
-      checkArgument(!Strings.isNullOrEmpty(assertion));
-
-      Map<String, String> request = new HashMap<String, String>();
-      request.put("assertion", assertion);
-      request.put("audience", "http://localhost:8080");
+      checkArgument(!Strings.isNullOrEmpty(assertion), "Assertion is empty or null");
+      String audience = checkNotNull(data).get("audience");
+      checkArgument(!Strings.isNullOrEmpty(audience), "Audience is empty or null");
 
       PersonaService personaService = new RestAdapter.Builder()
           .setServer("https://verifier.login.persona.org")
           .build()
           .create(PersonaService.class);
 
-      Map<String, String> response = personaService.verify(request);
-      System.out.println("Users email: " + response.get("email"));
+      Map<String, String> personaResponse = personaService.verify(data);
+      String email = checkNotNull(personaResponse.get("email"), "Could not verify persona, email is empty");
+      String token = WsEmailAuth.validateEmail(email);
 
+      Map<String, String> response = new HashMap<String, String>();
+      response.put("email", email);
+      response.put("token", token);
       return response;
     } catch (RetrofitError e) {
       Object body = e.getBody();
-      System.err.println(body);
+      if (body instanceof String) { throw new WebApplicationException(new Exception((String) body)); }
       throw new WebApplicationException(e);
     } catch (Exception e) {
       throw new WebApplicationException(e);
