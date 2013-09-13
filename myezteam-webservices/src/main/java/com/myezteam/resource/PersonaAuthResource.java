@@ -59,7 +59,7 @@ public class PersonaAuthResource {
         + "<body>"
         + "<button id='signin'>Login</button>"
         + "<button id='signout'>Logout</button>"
-        + "<script src='http://static.mobilelocalnews.com/persona/login.js'></script>"
+        + "<script src='http://s3.amazonaws.com/static.myezteam.com/js/persona/login.js'></script>"
         + "</body>"
         + ""
         + ""

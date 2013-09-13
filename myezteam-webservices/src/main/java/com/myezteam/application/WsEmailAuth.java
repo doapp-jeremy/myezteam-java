@@ -18,9 +18,11 @@ import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.myezteam.api.User;
 
 
-public class WsEmailAuth implements Authenticator<String, String> {
+public class WsEmailAuth implements Authenticator<String, User> {
+
   private static final LoadingCache<String, String> authTokensByEmail = CacheBuilder.newBuilder()
       .expireAfterAccess(1, TimeUnit.DAYS)
       .maximumSize(30)
@@ -32,19 +34,19 @@ public class WsEmailAuth implements Authenticator<String, String> {
       }
       );
 
-  private static final LoadingCache<String, Boolean> authTokens = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.DAYS)
+  private static final LoadingCache<String, User> users = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.DAYS)
       .maximumSize(30)
-      .build(new CacheLoader<String, Boolean>() {
+      .build(new CacheLoader<String, User>() {
         @Override
-        public Boolean load(String token) throws Exception {
-          return false;
+        public User load(String token) throws Exception {
+          return null;
         }
       }
       );
 
   public static String validateEmail(String email) throws ExecutionException {
     String token = authTokensByEmail.get(email);
-    authTokens.put(token, true);
+    users.put(token, null);
     return token;
   }
 
@@ -54,16 +56,14 @@ public class WsEmailAuth implements Authenticator<String, String> {
    * @see com.yammer.dropwizard.auth.Authenticator#authenticate(java.lang.Object)
    */
   @Override
-  public Optional<String> authenticate(String credentials) throws AuthenticationException {
-    // api key used by UI code
-    if ("c0f5248a-79e8-4443-a2fd-f2bf26ec683a".equals(credentials)) { return Optional.of(credentials); }
-
+  public Optional<User> authenticate(String token) throws AuthenticationException {
     try {
-      // check if we have a valid user token
-      if (authTokens.get(credentials)) { return Optional.of(credentials); }
+      User user = users.get(token);
+      if (user != null) { return Optional.of(new User()); }
     } catch (Exception e) {
       e.printStackTrace();
     }
+
     return Optional.absent();
   }
 
