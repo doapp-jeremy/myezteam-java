@@ -17,12 +17,15 @@ import javax.servlet.FilterRegistration.Dynamic;
 import javax.ws.rs.ext.ExceptionMapper;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import com.codahale.dropwizard.Application;
+import com.codahale.dropwizard.auth.oauth.OAuthProvider;
 import com.codahale.dropwizard.jersey.setup.JerseyEnvironment;
 import com.codahale.dropwizard.setup.Bootstrap;
 import com.codahale.dropwizard.setup.Environment;
 import com.google.common.collect.ImmutableSet;
+import com.myezteam.api.User;
 import com.myezteam.exception.WsExceptionMapper;
 import com.myezteam.resource.PersonaAuthResource;
+import com.myezteam.resource.UserResource;
 
 
 /**
@@ -30,6 +33,7 @@ import com.myezteam.resource.PersonaAuthResource;
  * 
  */
 public class WsApplication extends Application<WsConfiguration> {
+  private static final String TABLE_NAME = "objects";
 
   public static void main(String[] args) throws Exception {
     new WsApplication().run(args);
@@ -53,10 +57,14 @@ public class WsApplication extends Application<WsConfiguration> {
    */
   @Override
   public void run(WsConfiguration configuration, Environment environment) throws Exception {
-    AwsConfiguration awsConfig = configuration.getAwsConfiguration();
+    AwsConfiguration awsConfiguration = configuration.getAwsConfiguration();
+
+    WsEmailAuth auth = new WsEmailAuth(awsConfiguration, TABLE_NAME);
 
     final JerseyEnvironment jerseyEnv = environment.jersey();
-    jerseyEnv.register(new PersonaAuthResource());
+    jerseyEnv.register(new OAuthProvider<User>(auth, "Auth"));
+    jerseyEnv.register(new PersonaAuthResource(auth));
+    jerseyEnv.register(new UserResource(auth));
 
     // 0.6.2 - Allow CORS:
     // https://groups.google.com/forum/#!msg/dropwizard-user/QYknyWOZmns/6YA8SmHSGu8J

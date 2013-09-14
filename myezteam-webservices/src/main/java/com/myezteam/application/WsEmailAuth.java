@@ -22,6 +22,11 @@ import com.myezteam.api.User;
 
 
 public class WsEmailAuth implements Authenticator<String, User> {
+  private final CollectionMapper collectionMapper;
+
+  public WsEmailAuth(AwsConfiguration awsConfiguration, String tableName) {
+    collectionMapper = new CollectionMapper(awsConfiguration, tableName);
+  }
 
   private static final LoadingCache<String, String> authTokensByEmail = CacheBuilder.newBuilder()
       .expireAfterAccess(1, TimeUnit.DAYS)
@@ -44,10 +49,28 @@ public class WsEmailAuth implements Authenticator<String, User> {
       }
       );
 
-  public static String validateEmail(String email) throws ExecutionException {
+  public String validateEmail(String email) throws Exception {
     String token = authTokensByEmail.get(email);
-    users.put(token, null);
+    User user = collectionMapper.get(new User(email));
+    if (user == null) {
+      // new user, create it
+      users.put(token, collectionMapper.create(new User(email)));
+    }
     return token;
+  }
+
+  public User getUser(String token) {
+    try {
+      return users.get(token);
+    } catch (ExecutionException e) {
+      return null;
+    }
+  }
+
+  public void removeEmail(String email) throws ExecutionException {
+    String token = authTokensByEmail.get(email);
+    authTokensByEmail.invalidate(email);
+    users.invalidate(token);
   }
 
   /*
@@ -59,7 +82,7 @@ public class WsEmailAuth implements Authenticator<String, User> {
   public Optional<User> authenticate(String token) throws AuthenticationException {
     try {
       User user = users.get(token);
-      if (user != null) { return Optional.of(new User()); }
+      if (user != null) { return Optional.of(user); }
     } catch (Exception e) {
       e.printStackTrace();
     }

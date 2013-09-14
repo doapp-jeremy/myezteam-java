@@ -49,7 +49,7 @@ public class AwsConfiguration {
     return this;
   }
 
-  public AWSCredentials getBasicAWSCredentials() {
+  public AWSCredentials getAWSCredentials() {
     if (null == this.awsCredentials) {
       checkNotNull(this.accessKey, "AWS access key is null");
       checkNotNull(this.secretKey, "AWS secret key is null");

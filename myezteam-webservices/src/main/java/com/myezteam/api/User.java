@@ -17,10 +17,18 @@ package com.myezteam.api;
 public class User extends WsObject {
   private static final long serialVersionUID = 1L;
 
-  public static final String EMAIL = "email";
+  public static final String USER = "user";
+  public static final String EMAIL = WsObject.UUID;
+
+  /**
+   * @param collection
+   */
+  public User(String email) {
+    super(USER, email);
+  }
 
   public String getEmail() {
-    return super.get(EMAIL);
+    return super.getUUID();
   }
 
 }

@@ -13,11 +13,12 @@ package com.myezteam.resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import com.codahale.dropwizard.auth.Auth;
 import com.codahale.metrics.annotation.Timed;
 import com.myezteam.api.User;
+import com.myezteam.application.WsEmailAuth;
 
 
 /**
@@ -28,11 +29,17 @@ import com.myezteam.api.User;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
+  private final WsEmailAuth auth;
+
+  public UserResource(WsEmailAuth auth) {
+    this.auth = auth;
+  }
 
   @GET
+  @Path("/{token}")
   @Timed
-  public User me(@Auth User user) {
-    return user;
+  public User me(@PathParam("token") String token) {
+    return auth.getUser(token);
   }
 
 }

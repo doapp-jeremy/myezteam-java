@@ -39,6 +39,11 @@ import com.myezteam.application.WsEmailAuth;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class PersonaAuthResource {
+  private final WsEmailAuth auth;
+
+  public PersonaAuthResource(WsEmailAuth auth) {
+    this.auth = auth;
+  }
 
   @GET
   @Timed
@@ -88,7 +93,7 @@ public class PersonaAuthResource {
 
       Map<String, String> personaResponse = personaService.verify(data);
       String email = checkNotNull(personaResponse.get("email"), "Could not verify persona, email is empty");
-      String token = WsEmailAuth.validateEmail(email);
+      String token = auth.validateEmail(email);
 
       Map<String, String> response = new HashMap<String, String>();
       response.put("email", email);
@@ -99,6 +104,7 @@ public class PersonaAuthResource {
       if (body instanceof String) { throw new WebApplicationException(new Exception((String) body)); }
       throw new WebApplicationException(e);
     } catch (Exception e) {
+      e.printStackTrace();
       throw new WebApplicationException(e);
     }
   }
@@ -106,9 +112,9 @@ public class PersonaAuthResource {
   @Path("/logout")
   @POST
   @Timed
-  public String logout() {
+  public void logout(String email) {
     try {
-      return "logout";
+      auth.removeEmail(email);
     } catch (Exception e) {
       throw new WebApplicationException(e);
     }

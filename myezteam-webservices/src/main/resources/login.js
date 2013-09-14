@@ -15,7 +15,7 @@ $(function() {
           alert("Login success!!");
           console.log("Email: " + res.email);
           console.log("Token: " + res.token);
-          window.location = '/application/users/me';
+          window.location = '/application/users/' + res.token;
         },
         error: function(xhr, status, err) {
           navigator.id.logout();
