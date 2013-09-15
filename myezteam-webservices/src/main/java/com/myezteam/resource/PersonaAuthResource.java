@@ -60,6 +60,7 @@ public class PersonaAuthResource {
         + "<head>"
         + "<script src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>"
         + "<script src='https://login.persona.org/include.js'></script>"
+        + "<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js'></script>"
         + "</head>"
         + "<body>"
         + "<button id='signin'>Login</button>"
