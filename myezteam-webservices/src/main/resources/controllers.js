@@ -1,6 +1,6 @@
-//f6cc6120-205c-4e5b-bdad-0f26156c85be
+var token = localStorage.getItem('token');
 var config = {headers:  {
-        'Authorization': 'Bearer f6cc6120-205c-4e5b-bdad-0f26156c85be',
+        'Authorization': 'Bearer ' + token,
         'Accept': 'application/json'
     }
 };

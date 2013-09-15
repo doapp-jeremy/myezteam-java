@@ -1,5 +1,4 @@
 $(function() {
-  console.log("Calling naviator.watch");
   navigator.id.watch({
     onlogin: function(assertion) {
       // A user has logged in! Here you need to:
@@ -15,7 +14,8 @@ $(function() {
           alert("Login success!!");
           console.log("Email: " + res.email);
           console.log("Token: " + res.token);
-          window.location = '/application/users/' + res.token;
+          //window.location = '/application/users/' + res.token;
+          localStorage.setItem('token',res.token);
         },
         error: function(xhr, status, err) {
           navigator.id.logout();
