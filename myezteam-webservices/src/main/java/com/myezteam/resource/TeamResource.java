@@ -10,64 +10,63 @@
  */
 package com.myezteam.resource;
 
+import java.util.List;
+import java.util.UUID;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import com.codahale.dropwizard.auth.Auth;
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.Lists;
+import com.myezteam.api.Team;
 import com.myezteam.api.User;
-import com.myezteam.application.WsEmailAuth;
 
 
 /**
  * @author jeremy
  * 
  */
-@Path("/users")
+@Path("/teams")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UserResource {
-  private final WsEmailAuth auth;
-
-  public UserResource(WsEmailAuth auth) {
-    this.auth = auth;
-  }
-
-  @GET
-  @Timed
-  public User me(@Auth User user) {
-    return new User("blah@gmail.com");
-  }
+public class TeamResource {
 
   @Timed
   @GET
   @Path("/index")
   @Produces(MediaType.TEXT_HTML)
   public String index() {
-    return "<html>"
+    return "<html ng-app>"
         + "<head>"
-        + "<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js'></script>"
-        + "<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular-resource.min.js'></script>"
-        + "<script src='http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js'></script>"
-        + "<script src='http://s3.amazonaws.com/static.myezteam.com/js/persona/restangular.js'></script>"
+        + "<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js'></script>"
+        + "<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular-resource.min.js'></script>"
         + "<script src='http://s3.amazonaws.com/static.myezteam.com/js/persona/controllers.js'></script>"
         + "</head>"
-        + "<body ng-app='userServices'>"
-        + "<ul>"
-        + "<li>{{User.me.uuid}}</li>"
+        + "<body ng-controller='TeamCtrl'>"
+        + "<h1>Teams</h1>"
+        + "<ul class='teams'>"
+        + "<li ng-repeat='team in teams' class='thumbnail'>"
+        + "{{team.name}}"
+        + "</li>"
         + "</ul>"
         + "</body>"
         + "</html>";
   }
 
-  @GET
-  @Path("/{token}")
   @Timed
-  public User token(@PathParam("token") String token) {
-    return auth.getUser(token);
+  @GET
+  public List<Team> list(@Auth User authUser) {
+    return Lists.newArrayList(new Team(UUID.randomUUID().toString()));
+  }
+
+  @Timed
+  @POST
+  public Team create(@Valid Team team) {
+    return team;
   }
 
 }

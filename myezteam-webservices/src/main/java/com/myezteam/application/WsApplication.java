@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableSet;
 import com.myezteam.api.User;
 import com.myezteam.exception.WsExceptionMapper;
 import com.myezteam.resource.PersonaAuthResource;
+import com.myezteam.resource.TeamResource;
 import com.myezteam.resource.UserResource;
 
 
@@ -65,6 +66,7 @@ public class WsApplication extends Application<WsConfiguration> {
     jerseyEnv.register(new OAuthProvider<User>(auth, "Auth"));
     jerseyEnv.register(new PersonaAuthResource(auth));
     jerseyEnv.register(new UserResource(auth));
+    jerseyEnv.register(new TeamResource());
 
     // 0.6.2 - Allow CORS:
     // https://groups.google.com/forum/#!msg/dropwizard-user/QYknyWOZmns/6YA8SmHSGu8J
