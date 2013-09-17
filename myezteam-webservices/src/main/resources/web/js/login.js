@@ -14,12 +14,11 @@ $(function() {
         dataType: 'json',
         contentType: "application/json; charset=utf-8",
         success: function(res, status, xhr) { 
-          alert("Login success!!");
           console.log("Email: " + res.email);
           console.log("Token: " + res.token);
-          //window.location = '/application/users/' + res.token;
           localStorage.setItem('email',res.email);
           localStorage.setItem('token',res.token);
+          window.location = '/static.myezteam.com/index.html';
         },
         error: function(xhr, status, err) {
           navigator.id.logout();

@@ -34,12 +34,20 @@ angular.module('team', ['restangular']).
       });
       
       RestangularProvider.setRequestInterceptor(function(elem, operation, what) {
-//        if (operation === 'put') {
-//          elem.uuid = undefined;
-//          return elem;
-//        }
         return elem;
-      })
+      });
+      RestangularProvider.setResponseInterceptor(function(response, operation, what, url) {
+        return response;
+      });
+      RestangularProvider.setErrorInterceptor(function(response) {
+        if (response.status == '401') {
+          console.log("Not authorized");
+          window.location = '/static.myezteam.com/login.html';
+          return;
+        }
+        return response;
+      });
+      
   });
 
 

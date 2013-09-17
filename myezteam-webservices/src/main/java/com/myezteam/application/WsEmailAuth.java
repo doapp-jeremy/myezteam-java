@@ -83,9 +83,7 @@ public class WsEmailAuth implements Authenticator<String, User> {
     try {
       User user = users.get(token);
       if (user != null) { return Optional.of(user); }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    } catch (Exception e) {}
 
     return Optional.absent();
   }
