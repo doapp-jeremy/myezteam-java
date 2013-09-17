@@ -47,4 +47,11 @@ public class Event extends WsObject {
     return event;
   }
 
+  /**
+   * @return
+   */
+  public String getTeamUUID() {
+    return (String) get(TEAM_UUID);
+  }
+
 }

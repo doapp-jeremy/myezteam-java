@@ -103,8 +103,17 @@ public class CollectionMapper {
     this.tableName = tableName;
   }
 
-  public CollectionMapper(AwsConfiguration awsConfiguration) {
+  private CollectionMapper(AwsConfiguration awsConfiguration) {
     this(awsConfiguration, "objects");
+  }
+
+  private static CollectionMapper instance;
+
+  public static CollectionMapper getInstance(AwsConfiguration awsConfiguration) {
+    if (instance == null) {
+      instance = new CollectionMapper(awsConfiguration);
+    }
+    return instance;
   }
 
   private <T extends WsObject> String getTableName(T object) {

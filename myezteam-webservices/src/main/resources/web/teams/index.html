@@ -54,6 +54,22 @@
       </ul>
     </script>
   
+    <!-- CACHE FILE: detail.html -->
+    <script type="text/ng-template" id="detail.html">
+      <form name="myForm">
+        <div class="control-group" ng-class="{error: myForm.name.$invalid}">
+          <label>Name</label>
+          <input type="text" name="name" ng-model="team.name" required>
+          <span ng-show="myForm.name.$error.required" class="help-inline"> Required</span>
+        </div>
+      
+        <br>
+        <a href="#/" class="btn">Cancel</a>
+        <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid" class="btn btn-primary">Save</button>
+        <!-- <button ng-click="destroy()" ng-show="team.uuid" class="btn btn-danger">Delete</button> -->
+      </form>
+    </script>
+  
     <!-- CACHE FILE: list.html -->
     <script type="text/ng-template" id="events.html">
       <h3>{{ team.name }} Events</h3>
@@ -69,36 +85,29 @@
         <tr ng-repeat="event in events | filter:search | orderBy:'name'">
           <td><a href="#/{{event.uuid}}">{{event.name}}</a></td>
           <td>
-            <a href="#/edit/{{event.uuid}}"><i class="icon-pencil"></i></a>
+            <a href="#/events/edit/{{event.uuid}}"><i class="icon-pencil"></i></a>
           </td>
         </tr>
         </tbody>
       </table>
     </script>
   
-  
     <!-- CACHE FILE: detail.html -->
-    <script type="text/ng-template" id="detail.html">
+    <script type="text/ng-template" id="event_detail.html">
       <form name="myForm">
         <div class="control-group" ng-class="{error: myForm.name.$invalid}">
           <label>Name</label>
-          <input type="text" name="name" ng-model="team.name" required>
-          <span ng-show="myForm.name.$error.required" class="help-inline">
-              Required</span>
+          <input type="text" name="name" ng-model="event.name" required>
+          <span ng-show="myForm.name.$error.required" class="help-inline">Required</span>
         </div>
-      
-        <!--
-        <label>Description</label>
-        <textarea name="description" ng-model="team.description"></textarea>
-        -->
       
         <br>
         <a href="#/" class="btn">Cancel</a>
-        <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid"
-                class="btn btn-primary">Save</button>
+        <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid" class="btn btn-primary">Save</button>
         <!-- <button ng-click="destroy()" ng-show="team.uuid" class="btn btn-danger">Delete</button> -->
       </form>
     </script>
+  
   </div>
 
   </body>

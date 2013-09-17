@@ -11,14 +11,11 @@
 package com.myezteam.resource;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -47,7 +44,7 @@ public class EventResource {
   private final CollectionMapper collectionMapper;
 
   public EventResource(AwsConfiguration awsConfiguration) {
-    this.collectionMapper = new CollectionMapper(awsConfiguration);
+    this.collectionMapper = CollectionMapper.getInstance(awsConfiguration);
   }
 
   @Timed
@@ -64,23 +61,11 @@ public class EventResource {
   }
 
   @Timed
-  @GET
-  @Path("/team/{team_uuid}")
-  public List<Event> list(@Auth User authUser, @PathParam("team_uuid") String teamUUID) {
-    Map<String, String> conditions = new HashMap<String, String>();
-    conditions.put(Event.TEAM_UUID, teamUUID);
-    try {
-      return collectionMapper.list(Event.class, conditions);
-    } catch (ExecutionException | InstantiationException | IllegalAccessException e) {
-      e.printStackTrace();
-      throw new WebApplicationException(e);
-    }
-  }
-
-  @Timed
   @POST
   public Event create(@Auth User authUser, @Valid Event event) {
     try {
+      checkArgument(!Strings.isNullOrEmpty(event.getName()), "Name required");
+      checkArgument(!Strings.isNullOrEmpty(event.getTeamUUID()), "Team UUID required");
       if (null == event.getUUID()) {
         event = Event.newEvent(event);
       }
@@ -91,4 +76,19 @@ public class EventResource {
     }
   }
 
+  @Timed
+  @PUT
+  @Path(UUID_PATH)
+  public Event update(@Auth User authUser, @PathParam(UUID) String uuid, @Valid Event event) {
+    try {
+      checkArgument(!Strings.isNullOrEmpty(uuid), "Event UUID required");
+      checkArgument(uuid.equals(event.getUUID()), "Event UUID's do not match");
+      checkArgument(!Strings.isNullOrEmpty(event.getName()), "Name required");
+
+      return collectionMapper.save(event);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
+  }
 }

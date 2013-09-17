@@ -49,7 +49,7 @@ public class TeamResource {
   private final CollectionMapper collectionMapper;
 
   public TeamResource(AwsConfiguration awsConfiguration) {
-    this.collectionMapper = new CollectionMapper(awsConfiguration);
+    this.collectionMapper = CollectionMapper.getInstance(awsConfiguration);
   }
 
   @Timed
