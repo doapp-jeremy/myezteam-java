@@ -19,7 +19,7 @@ import com.google.common.base.Strings;
  * @author jeremy
  * 
  */
-public class WsObject extends HashMap<String, String> {
+public class WsObject extends HashMap<String, Object> {
   private static final long serialVersionUID = 1L;
   public static final String COLLECTION = "collection";
   public static final String UUID = "uuid";
@@ -56,14 +56,14 @@ public class WsObject extends HashMap<String, String> {
    * @return the collection
    */
   public String getCollection() {
-    return super.get(COLLECTION);
+    return (String) super.get(COLLECTION);
   }
 
   /**
    * @return the uuid
    */
   public String getUUID() {
-    return super.get(UUID);
+    return (String) super.get(UUID);
   }
 
   /**
@@ -85,5 +85,26 @@ public class WsObject extends HashMap<String, String> {
   public void setKey(String collection, String uuid) {
     super.put(COLLECTION, collection);
     super.put(UUID, uuid);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.AbstractMap#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    return 9 + 11 * getCollection().hashCode() + 13 * getUUID().hashCode();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.AbstractMap#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object object) {
+    if (object instanceof WsObject) { return hashCode() == object.hashCode(); }
+    return false;
   }
 }

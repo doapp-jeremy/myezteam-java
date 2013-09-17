@@ -29,14 +29,12 @@
         <thead>
         <tr>
           <th>team</th>
-          <th>Description</th>
           <th><a href="#/new"><i class="icon-plus-sign"></i></a></th>
         </tr>
         </thead>
         <tbody>
         <tr ng-repeat="team in teams | filter:search | orderBy:'name'">
           <td><a href="#/{{team.uuid}}">{{team.name}}</a></td>
-          <td>{{team.owner_uuid}}</td>
           <td>
             <a href="#/edit/{{team.uuid}}"><i class="icon-pencil"></i></a>
           </td>

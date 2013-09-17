@@ -181,8 +181,14 @@ public class CollectionMapper {
 
   private Map<String, AttributeValue> getAttributeValues(WsObject wsObject) {
     Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
-    for (Entry<String, String> entry : wsObject.entrySet()) {
-      item.put(entry.getKey(), new AttributeValue(entry.getValue()));
+    for (Entry<String, Object> entry : wsObject.entrySet()) {
+      Object value = entry.getValue();
+      if (value instanceof String) {
+        item.put(entry.getKey(), new AttributeValue((String) value));
+      }
+      else {
+        throw new RuntimeException("Need to get string value of object: " + value.getClass().getName());
+      }
     }
     return item;
   }

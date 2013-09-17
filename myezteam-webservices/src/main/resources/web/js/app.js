@@ -3,28 +3,60 @@ angular.module('team', ['restangular']).
   config(function($routeProvider, RestangularProvider) {
     $routeProvider.
       when('/', {
-        controller:ListCtrl, 
+        controller: function($scope, Restangular) {
+          $scope['teams'] = Restangular.all('teams').getList()
+        }, 
         templateUrl:'list.html'
       }).
-      when('/:teamUUID', {
-        controller:ViewCtrl,
+      when('/:uuid', {
+        controller: function($scope, Restangular, team) {
+          $scope['team'] = team;
+        },
         templateUrl:'view.html',
         resolve: {
           team: function(Restangular, $route) {
-            return Restangular.one('teams', $route.current.params.teamUUID).get();
+            return Restangular.one('teams', $route.current.params.uuid).get();
           }
         }
       }).
-      when('/edit/:teamUUID', {
-        controller:EditCtrl, 
+      when('/edit/:uuid', {
+        controller: function($scope, $location, Restangular, team) {
+          var original = team;
+          $scope.team = Restangular.copy(original);
+          
+
+          $scope.isClean = function() {
+            return angular.equals(original, $scope['team']);
+          }
+
+          $scope.destroy = function() {
+            original.remove().then(function() {
+              $location.path('/list');
+            });
+          };
+
+          $scope.save = function() {
+            $scope.team.put().then(function() {
+              $location.path('/');
+            });
+          };
+        }, 
         templateUrl:'detail.html',
         resolve: {
           team: function(Restangular, $route){
-            return Restangular.one('teams', $route.current.params.teamUUID).get();
+            return Restangular.one('teams', $route.current.params.uuid).get();
           }
         }
       }).
-      when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
+      when('/new', {controller: function($scope, $location, Restangular) {
+          $scope.save = function() {
+            Restangular.all('teams').post($scope.team).then(function(team) {
+              $location.path('/list');
+            });
+          }
+        },
+        templateUrl:'detail.html'
+      }).
       otherwise({redirectTo:'/'});
       
       RestangularProvider.setDefaultHeaders({'Authorization': 'Bearer ' + token});
@@ -61,41 +93,41 @@ angular.module('team', ['restangular']).
   });
 
 
-function ListCtrl($scope, Restangular) {
-  $scope.teams = Restangular.all('teams').getList();
-}
+//function ListCtrl($scope, Restangular) {
+//  $scope.teams = Restangular.all('teams').getList();
+//}
 
-function ViewCtrl($scope, Restangular, team) {
-  $scope.team = team;
-}
+//function ViewCtrl($scope, Restangular, team) {
+//  $scope.team = team;
+//}
 
 
-function CreateCtrl($scope, $location, Restangular) {
-  $scope.save = function() {
-    Restangular.all('teams').post($scope.team).then(function(team) {
-      $location.path('/list');
-    });
-  }
-}
+//function CreateCtrl($scope, $location, Restangular) {
+//  $scope.save = function() {
+//    Restangular.all('teams').post($scope.team).then(function(team) {
+//      $location.path('/list');
+//    });
+//  }
+//}
 
-function EditCtrl($scope, $location, Restangular, team) {
-  var original = team;
-  $scope.team = Restangular.copy(original);
-  
-
-  $scope.isClean = function() {
-    return angular.equals(original, $scope.team);
-  }
-
-  $scope.destroy = function() {
-    original.remove().then(function() {
-      $location.path('/list');
-    });
-  };
-
-  $scope.save = function() {
-    $scope.team.put().then(function() {
-      $location.path('/');
-    });
-  };
-}
+//function EditCtrl($scope, $location, Restangular, team) {
+//  var original = team;
+//  $scope.team = Restangular.copy(original);
+//  
+//
+//  $scope.isClean = function() {
+//    return angular.equals(original, $scope.team);
+//  }
+//
+//  $scope.destroy = function() {
+//    original.remove().then(function() {
+//      $location.path('/list');
+//    });
+//  };
+//
+//  $scope.save = function() {
+//    $scope.team.put().then(function() {
+//      $location.path('/');
+//    });
+//  };
+//}

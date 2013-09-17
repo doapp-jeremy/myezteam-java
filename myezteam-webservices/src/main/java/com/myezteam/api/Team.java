@@ -34,11 +34,11 @@ public class Team extends WsObject {
   }
 
   public String getName() {
-    return super.get(NAME);
+    return (String) super.get(NAME);
   }
 
   public String getOwnerUUID() {
-    return super.get(OWNER_UUID);
+    return (String) super.get(OWNER_UUID);
   }
 
   public User getOwner() {
