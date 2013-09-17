@@ -225,13 +225,14 @@ public class CollectionMapper {
     request.withItem(getAttributeValues(object));
     dynamoDB.putItem(request);
     objectCache.put(object, object);
+    // need to figure out how to only clear necessary objects
+    listCache.invalidateAll();
     return object;
   }
 
   private <T extends WsObject> List<T> scan(Class<T> klass, Map<String, Condition> scanFilter)
       throws InstantiationException,
       IllegalAccessException {
-    int hashCode = scanFilter.hashCode();
     T object = klass.newInstance();
     Map<String, AttributeValue> exclusiveStartKey = null;
     List<T> items = new ArrayList<T>();
