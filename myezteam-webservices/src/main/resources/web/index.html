@@ -38,13 +38,21 @@
           <td><a href="#/{{team.uuid}}" target="_blank">{{team.name}}</a></td>
           <td>{{team.owner_uuid}}</td>
           <td>
-            <a href="#/{{team.uuid.$oid}}"><i class="icon-pencil"></i></a>
+            <a href="#/edit/{{team.uuid}}"><i class="icon-pencil"></i></a>
           </td>
         </tr>
         </tbody>
       </table>
     </script>
   
+    <!-- CACHE FILE: view.html -->
+    <script type="text/ng-template" id="view.html">
+      <ul>
+        <li>UUID: {{team.uuid}}</li>
+        <li>Name: {{team.name}}</li>
+        <li>Onwer: {{team.owner_uuid}}</li>
+      </ul>
+    </script>
   
   
     <!-- CACHE FILE: detail.html -->

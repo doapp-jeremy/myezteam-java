@@ -7,6 +7,15 @@ angular.module('team', ['restangular']).
         templateUrl:'list.html'
       }).
       when('/:teamUUID', {
+        controller:ViewCtrl,
+        templateUrl:'view.html',
+        resolve: {
+          team: function(Restangular, $route) {
+            return Restangular.one('teams', $route.current.params.teamUUID).get();
+          }
+        }
+      }).
+      when('/edit/:teamUUID', {
         controller:EditCtrl, 
         templateUrl:'detail.html',
         resolve: {
@@ -21,7 +30,7 @@ angular.module('team', ['restangular']).
       RestangularProvider.setDefaultHeaders({'Authorization': 'Bearer ' + token});
       RestangularProvider.setBaseUrl('http://localhost:8080/application');
       RestangularProvider.setRestangularFields({
-        id: 'uuid.$oid'
+        id: 'uuid'
       });
       
       RestangularProvider.setRequestInterceptor(function(elem, operation, what) {
@@ -36,6 +45,10 @@ angular.module('team', ['restangular']).
 
 function ListCtrl($scope, Restangular) {
   $scope.teams = Restangular.all('teams').getList();
+}
+
+function ViewCtrl($scope, Restangular, team) {
+  $scope.team = team;
 }
 
 
