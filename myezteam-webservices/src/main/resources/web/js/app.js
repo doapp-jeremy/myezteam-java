@@ -1,17 +1,17 @@
 var token = localStorage.getItem("token");
-angular.module('project', ['restangular']).
+angular.module('team', ['restangular']).
   config(function($routeProvider, RestangularProvider) {
     $routeProvider.
       when('/', {
         controller:ListCtrl, 
         templateUrl:'list.html'
       }).
-      when('/:projectId', {
+      when('/:teamUUID', {
         controller:EditCtrl, 
         templateUrl:'detail.html',
         resolve: {
-          project: function(Restangular, $route){
-            return Restangular.one('teams', $route.current.params.projectId).get();
+          team: function(Restangular, $route){
+            return Restangular.one('teams', $route.current.params.teamUUID).get();
           }
         }
       }).
@@ -20,7 +20,6 @@ angular.module('project', ['restangular']).
       
       RestangularProvider.setDefaultHeaders({'Authorization': 'Bearer ' + token});
       RestangularProvider.setBaseUrl('http://localhost:8080/application');
-      //RestangularProvider.setDefaultRequestParams({ apiKey: '4f847ad3e4b08a2eed5f3b54' })
       RestangularProvider.setRestangularFields({
         id: 'uuid.$oid'
       });
@@ -36,25 +35,25 @@ angular.module('project', ['restangular']).
 
 
 function ListCtrl($scope, Restangular) {
-  $scope.projects = Restangular.all('teams').getList();
+  $scope.teams = Restangular.all('teams').getList();
 }
 
 
 function CreateCtrl($scope, $location, Restangular) {
   $scope.save = function() {
-    Restangular.all('teams').post($scope.project).then(function(project) {
+    Restangular.all('teams').post($scope.team).then(function(team) {
       $location.path('/list');
     });
   }
 }
 
-function EditCtrl($scope, $location, Restangular, project) {
-  var original = project;
-  $scope.project = Restangular.copy(original);
+function EditCtrl($scope, $location, Restangular, team) {
+  var original = team;
+  $scope.team = Restangular.copy(original);
   
 
   $scope.isClean = function() {
-    return angular.equals(original, $scope.project);
+    return angular.equals(original, $scope.team);
   }
 
   $scope.destroy = function() {
@@ -64,7 +63,7 @@ function EditCtrl($scope, $location, Restangular, project) {
   };
 
   $scope.save = function() {
-    $scope.project.put().then(function() {
+    $scope.team.put().then(function() {
       $location.path('/');
     });
   };

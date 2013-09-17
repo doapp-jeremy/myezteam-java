@@ -16,9 +16,8 @@
   </head>
 
   <body>
-    <div ng-app="project">
-    <h2><a target="_blank" href="https://github.com/mgonto/restangular">Restangular Example. Click here to check out the library</a></h2>
-    <h2>JavaScript Projects. <a href="http://angularjs.org/#wire-up-a-backend" target="_blank">Based on AngularJS's sample</a></h2>
+    <div ng-app="team">
+    <h2>My Teams</h2>
     <div ng-view></div>
   
   
@@ -29,17 +28,17 @@
       <table>
         <thead>
         <tr>
-          <th>Project</th>
+          <th>team</th>
           <th>Description</th>
           <th><a href="#/new"><i class="icon-plus-sign"></i></a></th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="project in projects | filter:search | orderBy:'name'">
-          <td><a href="#/{{project.uuid}}" target="_blank">{{project.name}}</a></td>
-          <td>{{project.owner_uuid}}</td>
+        <tr ng-repeat="team in teams | filter:search | orderBy:'name'">
+          <td><a href="#/{{team.uuid}}" target="_blank">{{team.name}}</a></td>
+          <td>{{team.owner_uuid}}</td>
           <td>
-            <a href="#/{{project.uuid.$oid}}"><i class="icon-pencil"></i></a>
+            <a href="#/{{team.uuid.$oid}}"><i class="icon-pencil"></i></a>
           </td>
         </tr>
         </tbody>
@@ -53,31 +52,20 @@
       <form name="myForm">
         <div class="control-group" ng-class="{error: myForm.name.$invalid}">
           <label>Name</label>
-          <input type="text" name="name" ng-model="project.name" required>
+          <input type="text" name="name" ng-model="team.name" required>
           <span ng-show="myForm.name.$error.required" class="help-inline">
               Required</span>
         </div>
       
-        <!--
-        <div class="control-group" ng-class="{error: myForm.site.$invalid}">
-          <label>Website</label>
-          <input type="url" name="site" ng-model="project.site" required>
-          <span ng-show="myForm.site.$error.required" class="help-inline">
-              Required</span>
-          <span ng-show="myForm.site.$error.url" class="help-inline">
-              Not a URL</span>
-        </div>
-        -->
-      
         <label>Description</label>
-        <textarea name="description" ng-model="project.description"></textarea>
+        <textarea name="description" ng-model="team.description"></textarea>
       
         <br>
         <a href="#/" class="btn">Cancel</a>
         <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid"
                 class="btn btn-primary">Save</button>
         <button ng-click="destroy()"
-                ng-show="project._id" class="btn btn-danger">Delete</button>
+                ng-show="team.uuid" class="btn btn-danger">Delete</button>
       </form>
     </script>
   </div>
