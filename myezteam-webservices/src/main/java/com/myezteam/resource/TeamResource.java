@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import com.codahale.dropwizard.auth.Auth;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
+import com.myezteam.api.Event;
 import com.myezteam.api.Team;
 import com.myezteam.api.User;
 import com.myezteam.application.AwsConfiguration;
@@ -93,6 +94,20 @@ public class TeamResource {
     conditions.put(Team.OWNER_UUID, authUser.getUUID());
     try {
       return collectionMapper.list(Team.class, conditions);
+    } catch (ExecutionException | InstantiationException | IllegalAccessException e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
+  }
+
+  @Timed
+  @GET
+  @Path(UUID_PATH + "/events")
+  public List<Event> events(@Auth User authUser, @PathParam(UUID) String uuid) {
+    Map<String, String> conditions = new HashMap<String, String>();
+    conditions.put(Event.TEAM_UUID, uuid);
+    try {
+      return collectionMapper.list(Event.class, conditions);
     } catch (ExecutionException | InstantiationException | IllegalAccessException e) {
       e.printStackTrace();
       throw new WebApplicationException(e);

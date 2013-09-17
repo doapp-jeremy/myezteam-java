@@ -84,14 +84,13 @@ public class PersonaAuthResource {
     try {
       String assertion = checkNotNull(data).get("assertion");
       checkArgument(!Strings.isNullOrEmpty(assertion), "Assertion is empty or null");
-      String audience = checkNotNull(data).get("audience");
-      checkArgument(!Strings.isNullOrEmpty(audience), "Audience is empty or null");
 
       PersonaService personaService = new RestAdapter.Builder()
           .setServer("https://verifier.login.persona.org")
           .build()
           .create(PersonaService.class);
 
+      data.put("audience", "http://static.myezteam.com");
       Map<String, String> personaResponse = personaService.verify(data);
       String email = checkNotNull(personaResponse.get("email"), "Could not verify persona, email is empty");
       String token = auth.validateEmail(email);

@@ -19,11 +19,22 @@ angular.module('team', ['restangular']).
           }
         }
       }).
+      when('/:uuid/events', {
+        controller: function($scope, Restangular, team) {
+          $scope['team'] = team;
+          $scope.events = team.getList('events');
+        },
+        templateUrl:'events.html',
+        resolve: {
+          team: function(Restangular, $route) {
+            return Restangular.one('teams', $route.current.params.uuid).get();
+          }
+        }
+      }).
       when('/edit/:uuid', {
         controller: function($scope, $location, Restangular, team) {
           var original = team;
           $scope.team = Restangular.copy(original);
-          
 
           $scope.isClean = function() {
             return angular.equals(original, $scope['team']);
@@ -74,7 +85,7 @@ angular.module('team', ['restangular']).
       RestangularProvider.setErrorInterceptor(function(response) {
         if (response.status == 401) {
           if (confirm("You are not logged in, do you want to login?")) {
-            window.location = '/static.myezteam.com/login.html';
+            window.location = '/login.html';
             return;
           }
         }
@@ -91,43 +102,3 @@ angular.module('team', ['restangular']).
       });
       
   });
-
-
-//function ListCtrl($scope, Restangular) {
-//  $scope.teams = Restangular.all('teams').getList();
-//}
-
-//function ViewCtrl($scope, Restangular, team) {
-//  $scope.team = team;
-//}
-
-
-//function CreateCtrl($scope, $location, Restangular) {
-//  $scope.save = function() {
-//    Restangular.all('teams').post($scope.team).then(function(team) {
-//      $location.path('/list');
-//    });
-//  }
-//}
-
-//function EditCtrl($scope, $location, Restangular, team) {
-//  var original = team;
-//  $scope.team = Restangular.copy(original);
-//  
-//
-//  $scope.isClean = function() {
-//    return angular.equals(original, $scope.team);
-//  }
-//
-//  $scope.destroy = function() {
-//    original.remove().then(function() {
-//      $location.path('/list');
-//    });
-//  };
-//
-//  $scope.save = function() {
-//    $scope.team.put().then(function() {
-//      $location.path('/');
-//    });
-//  };
-//}

@@ -10,7 +10,7 @@ $(function() {
       $.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
         type: 'POST',
         url: 'http://localhost:8080/application/auth/persona/login', // This is a URL on your website.
-        data: JSON.stringify({assertion: assertion, audience: 'http://s3.amazonaws.com/'}),
+        data: JSON.stringify({assertion: assertion}),
         dataType: 'json',
         contentType: "application/json; charset=utf-8",
         success: function(res, status, xhr) { 
@@ -18,7 +18,7 @@ $(function() {
           console.log("Token: " + res.token);
           localStorage.setItem('email',res.email);
           localStorage.setItem('token',res.token);
-          window.location = '/static.myezteam.com/index.html';
+          window.location = '/teams/index.html';
         },
         error: function(xhr, status, err) {
           navigator.id.logout();
