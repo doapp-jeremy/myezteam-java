@@ -42,16 +42,58 @@ import com.myezteam.api.WsObject;
  * 
  */
 public class CollectionMapper {
+  private static class ListRequest<T extends WsObject> {
+    private final Class<T> klass;
+    private final Map<String, Condition> scanFilter;
+
+    public ListRequest(Class<T> klass, Map<String, Condition> scanFilter) {
+      this.klass = klass;
+      this.scanFilter = scanFilter;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+      return 17 + klass.hashCode() * 19 + scanFilter.hashCode() * 31;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object object) {
+      if (object instanceof ListRequest) { return hashCode() == object.hashCode(); }
+      return super.equals(object);
+    }
+  }
+
   private final AwsConfiguration awsConfiguration;
   private final AmazonDynamoDBAsync dynamoDB;
   private final String tableName;
 
   private final LoadingCache<WsObject, WsObject> objectCache = CacheBuilder.newBuilder()
-      .maximumSize(100000)
+      .maximumSize(10000)
       .build(new CacheLoader<WsObject, WsObject>() {
         @Override
         public WsObject load(WsObject object) throws Exception {
           return loadWsObject(object);
+        };
+      });
+
+  @SuppressWarnings("rawtypes")
+  private final LoadingCache<ListRequest, List<WsObject>> listCache = CacheBuilder.newBuilder()
+      .maximumSize(1000)
+      .build(new CacheLoader<ListRequest, List<WsObject>>() {
+        @SuppressWarnings("unchecked")
+        @Override
+        public List<WsObject> load(ListRequest listRequest) throws Exception {
+          return scan(listRequest.klass, listRequest.scanFilter);
         };
       });
 
@@ -186,9 +228,10 @@ public class CollectionMapper {
     return object;
   }
 
-  public <T extends WsObject> List<T> listWithConditions(Class<T> klass, Map<String, Condition> scanFilter)
+  private <T extends WsObject> List<T> scan(Class<T> klass, Map<String, Condition> scanFilter)
       throws InstantiationException,
       IllegalAccessException {
+    int hashCode = scanFilter.hashCode();
     T object = klass.newInstance();
     Map<String, AttributeValue> exclusiveStartKey = null;
     List<T> items = new ArrayList<T>();
@@ -202,14 +245,22 @@ public class CollectionMapper {
     return items;
   }
 
+  @SuppressWarnings("unchecked")
+  public <T extends WsObject> List<T> listWithConditions(Class<T> klass, Map<String, Condition> scanFilter)
+      throws InstantiationException,
+      IllegalAccessException, ExecutionException {
+    return (List<T>) listCache.get(new ListRequest<T>(klass, scanFilter));
+  }
+
   /**
    * @param class1
    * @return
    * @throws IllegalAccessException
    * @throws InstantiationException
+   * @throws ExecutionException
    */
   public <T extends WsObject> List<T> list(Class<T> klass, Map<String, String> conditions) throws InstantiationException,
-      IllegalAccessException {
+      IllegalAccessException, ExecutionException {
     Map<String, Condition> scanFilter = new HashMap<String, Condition>();
     for (Entry<String, String> condition : conditions.entrySet()) {
       scanFilter.put(

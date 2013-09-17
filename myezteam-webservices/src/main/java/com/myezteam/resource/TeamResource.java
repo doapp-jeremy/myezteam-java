@@ -14,6 +14,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -41,6 +42,8 @@ import com.myezteam.application.CollectionMapper;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TeamResource {
+  static final String UUID = "uuid";
+  static final String UUID_PATH = "/{" + UUID + "}";
 
   private final CollectionMapper collectionMapper;
 
@@ -72,8 +75,8 @@ public class TeamResource {
 
   @Timed
   @GET
-  @Path("/{uuid}")
-  public Team get(@Auth User authUser, @PathParam("uuid") String teamUUID) {
+  @Path(UUID_PATH)
+  public Team get(@Auth User authUser, @PathParam(UUID) String teamUUID) {
     try {
       checkArgument(!Strings.isNullOrEmpty(teamUUID), "Team UUID is empty");
       return collectionMapper.get(new Team(teamUUID));
@@ -90,7 +93,7 @@ public class TeamResource {
     conditions.put(Team.OWNER_UUID, authUser.getUUID());
     try {
       return collectionMapper.list(Team.class, conditions);
-    } catch (InstantiationException | IllegalAccessException e) {
+    } catch (ExecutionException | InstantiationException | IllegalAccessException e) {
       e.printStackTrace();
       throw new WebApplicationException(e);
     }
@@ -112,9 +115,11 @@ public class TeamResource {
 
   @Timed
   @PUT
-  public Team update(@Auth User authUser, @Valid Team team) {
+  @Path(UUID_PATH)
+  public Team update(@Auth User authUser, @PathParam(UUID) String teamUUID, @Valid Team team) {
     try {
-      checkArgument(!Strings.isNullOrEmpty(team.getUUID()), "Team UUID required");
+      checkArgument(!Strings.isNullOrEmpty(teamUUID), "Team UUID required");
+      checkArgument(teamUUID.equals(team.getUUID()), "Team UUID's do not match");
       checkArgument(!Strings.isNullOrEmpty(team.getOwnerUUID()), "Team Owner UUID required");
       checkArgument(!Strings.isNullOrEmpty(team.getName()), "Team name required");
 

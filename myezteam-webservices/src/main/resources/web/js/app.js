@@ -40,10 +40,20 @@ angular.module('team', ['restangular']).
         return response;
       });
       RestangularProvider.setErrorInterceptor(function(response) {
-        if (response.status == '401') {
-          console.log("Not authorized");
-          window.location = '/static.myezteam.com/login.html';
-          return;
+        if (response.status == 401) {
+          if (confirm("You are not logged in, do you want to login?")) {
+            window.location = '/static.myezteam.com/login.html';
+            return;
+          }
+        }
+        else if  (response.status == 403) {
+          alert('You are not authorized to access the requested data');
+        }
+        else if (response.status == 0) {
+          alert('Did not get a response. Is the server running?');
+        }
+        else if (response.status >= 400) {
+          alert('There was a server error');
         }
         return response;
       });

@@ -35,7 +35,7 @@
         </thead>
         <tbody>
         <tr ng-repeat="team in teams | filter:search | orderBy:'name'">
-          <td><a href="#/{{team.uuid}}" target="_blank">{{team.name}}</a></td>
+          <td><a href="#/{{team.uuid}}">{{team.name}}</a></td>
           <td>{{team.owner_uuid}}</td>
           <td>
             <a href="#/edit/{{team.uuid}}"><i class="icon-pencil"></i></a>
