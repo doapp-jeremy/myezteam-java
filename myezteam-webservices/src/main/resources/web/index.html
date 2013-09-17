@@ -36,10 +36,10 @@
         </thead>
         <tbody>
         <tr ng-repeat="project in projects | filter:search | orderBy:'name'">
-          <td><a href="{{project.uuid}}" target="_blank">{{project.uuid}}</a></td>
-          <td>{{project.uuid}}</td>
+          <td><a href="#/{{project.uuid}}" target="_blank">{{project.name}}</a></td>
+          <td>{{project.owner_uuid}}</td>
           <td>
-            <a href="#/edit/{{project.uuid.$oid}}"><i class="icon-pencil"></i></a>
+            <a href="#/{{project.uuid.$oid}}"><i class="icon-pencil"></i></a>
           </td>
         </tr>
         </tbody>
@@ -58,6 +58,7 @@
               Required</span>
         </div>
       
+        <!--
         <div class="control-group" ng-class="{error: myForm.site.$invalid}">
           <label>Website</label>
           <input type="url" name="site" ng-model="project.site" required>
@@ -66,6 +67,7 @@
           <span ng-show="myForm.site.$error.url" class="help-inline">
               Not a URL</span>
         </div>
+        -->
       
         <label>Description</label>
         <textarea name="description" ng-model="project.description"></textarea>

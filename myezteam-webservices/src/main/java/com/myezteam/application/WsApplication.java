@@ -66,7 +66,7 @@ public class WsApplication extends Application<WsConfiguration> {
     jerseyEnv.register(new OAuthProvider<User>(auth, "Auth"));
     jerseyEnv.register(new PersonaAuthResource(auth));
     jerseyEnv.register(new UserResource(auth));
-    jerseyEnv.register(new TeamResource());
+    jerseyEnv.register(new TeamResource(awsConfiguration));
 
     // 0.6.2 - Allow CORS:
     // https://groups.google.com/forum/#!msg/dropwizard-user/QYknyWOZmns/6YA8SmHSGu8J

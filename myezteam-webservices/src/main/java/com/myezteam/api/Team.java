@@ -21,6 +21,10 @@ public class Team extends WsObject {
   public static final String NAME = "name";
   public static final String OWNER_UUID = "owner_uuid";
 
+  public Team() {
+    this(null);
+  }
+
   /**
    * @param collection
    * @param uuid
@@ -39,6 +43,17 @@ public class Team extends WsObject {
 
   public User getOwner() {
     return new User(getOwnerUUID());
+  }
+
+  /**
+   * @param team2
+   * @param authUser
+   * @return
+   */
+  public static Team newTeam(Team team, User owner) {
+    team.put(UUID, java.util.UUID.randomUUID().toString());
+    team.put(OWNER_UUID, owner.getUUID());
+    return team;
   }
 
 }

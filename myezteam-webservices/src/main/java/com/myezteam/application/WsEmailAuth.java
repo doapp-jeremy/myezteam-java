@@ -54,7 +54,7 @@ public class WsEmailAuth implements Authenticator<String, User> {
     User user = collectionMapper.get(new User(email));
     if (user == null) {
       // new user, create it
-      users.put(token, collectionMapper.create(new User(email)));
+      users.put(token, collectionMapper.save(new User(email)));
     }
     return token;
   }

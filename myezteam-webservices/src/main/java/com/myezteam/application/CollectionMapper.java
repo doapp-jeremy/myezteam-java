@@ -12,7 +12,9 @@ package com.myezteam.application;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -21,9 +23,13 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
 import com.amazonaws.services.dynamodbv2.model.GetItemResult;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -53,6 +59,10 @@ public class CollectionMapper {
     this.awsConfiguration = awsConfiguration;
     this.dynamoDB = new AmazonDynamoDBAsyncClient(awsConfiguration.getAWSCredentials());
     this.tableName = tableName;
+  }
+
+  public CollectionMapper(AwsConfiguration awsConfiguration) {
+    this(awsConfiguration, "objects");
   }
 
   private <T extends WsObject> String getTableName(T object) {
@@ -135,7 +145,33 @@ public class CollectionMapper {
     return item;
   }
 
-  public <T extends WsObject> T create(T object) throws AmazonServiceException, AmazonClientException, InterruptedException,
+  private <T extends WsObject> T getObjectFromItem(Class<T> klass, Map<String, AttributeValue> item)
+      throws InstantiationException, IllegalAccessException {
+    checkArgument(!Strings.isNullOrEmpty(checkNotNull(item.get(WsObject.COLLECTION).getS())));
+    checkArgument(!Strings.isNullOrEmpty(checkNotNull(item.get(WsObject.UUID).getS())));
+    T wsObject = klass.newInstance();
+    for (Entry<String, AttributeValue> entry : item.entrySet()) {
+      wsObject.put(entry.getKey(), entry.getValue().getS());
+    }
+    return wsObject;
+  }
+
+  /**
+   * @param items
+   * @return
+   * @throws IllegalAccessException
+   * @throws InstantiationException
+   */
+  private <T extends WsObject> List<T> getObjectFromItems(Class<T> klass, List<Map<String, AttributeValue>> items)
+      throws InstantiationException, IllegalAccessException {
+    List<T> objects = new ArrayList<T>();
+    for (Map<String, AttributeValue> item : items) {
+      objects.add(getObjectFromItem(klass, item));
+    }
+    return objects;
+  }
+
+  public <T extends WsObject> T save(T object) throws AmazonServiceException, AmazonClientException, InterruptedException,
       ExecutionException {
     String collection = object.getCollection();
     String uuid = object.getUUID();
@@ -145,9 +181,43 @@ public class CollectionMapper {
 
     PutItemRequest request = new PutItemRequest().withTableName(getTableName(object));
     request.withItem(getAttributeValues(object));
-    dynamoDB.putItemAsync(request).get();
+    dynamoDB.putItem(request);
     objectCache.put(object, object);
     return object;
+  }
+
+  public <T extends WsObject> List<T> listWithConditions(Class<T> klass, Map<String, Condition> scanFilter)
+      throws InstantiationException,
+      IllegalAccessException {
+    T object = klass.newInstance();
+    Map<String, AttributeValue> exclusiveStartKey = null;
+    List<T> items = new ArrayList<T>();
+    do {
+      ScanResult result = dynamoDB.scan(new ScanRequest(getTableName(object)).withScanFilter(scanFilter).withExclusiveStartKey(
+          exclusiveStartKey));
+      exclusiveStartKey = result.getLastEvaluatedKey();
+      items.addAll(getObjectFromItems(klass, result.getItems()));
+    } while (exclusiveStartKey != null);
+
+    return items;
+  }
+
+  /**
+   * @param class1
+   * @return
+   * @throws IllegalAccessException
+   * @throws InstantiationException
+   */
+  public <T extends WsObject> List<T> list(Class<T> klass, Map<String, String> conditions) throws InstantiationException,
+      IllegalAccessException {
+    Map<String, Condition> scanFilter = new HashMap<String, Condition>();
+    for (Entry<String, String> condition : conditions.entrySet()) {
+      scanFilter.put(
+          condition.getKey(),
+          new Condition().withComparisonOperator(ComparisonOperator.EQ).withAttributeValueList(
+              new AttributeValue(condition.getValue())));
+    }
+    return listWithConditions(klass, scanFilter);
   }
 
 }

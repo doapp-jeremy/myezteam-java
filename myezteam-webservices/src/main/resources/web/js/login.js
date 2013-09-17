@@ -40,5 +40,7 @@ if (signinLink) {
 
 var signoutLink = document.getElementById('signout');
 if (signoutLink) {
+  localStorage.removeItem('token');
+  localStorage.removeItem('email');
   signoutLink.onclick = function() { navigator.id.logout(); };
 }

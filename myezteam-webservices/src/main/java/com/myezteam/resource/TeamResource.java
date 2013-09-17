@@ -10,20 +10,27 @@
  */
 package com.myezteam.resource;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import com.codahale.dropwizard.auth.Auth;
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.Lists;
+import com.google.common.base.Strings;
 import com.myezteam.api.Team;
 import com.myezteam.api.User;
+import com.myezteam.application.AwsConfiguration;
+import com.myezteam.application.CollectionMapper;
 
 
 /**
@@ -34,6 +41,12 @@ import com.myezteam.api.User;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TeamResource {
+
+  private final CollectionMapper collectionMapper;
+
+  public TeamResource(AwsConfiguration awsConfiguration) {
+    this.collectionMapper = new CollectionMapper(awsConfiguration);
+  }
 
   @Timed
   @GET
@@ -59,14 +72,56 @@ public class TeamResource {
 
   @Timed
   @GET
+  @Path("/{uuid}")
+  public Team get(@Auth User authUser, @PathParam("uuid") String teamUUID) {
+    try {
+      checkArgument(!Strings.isNullOrEmpty(teamUUID), "Team UUID is empty");
+      return collectionMapper.get(new Team(teamUUID));
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
+  }
+
+  @Timed
+  @GET
   public List<Team> list(@Auth User authUser) {
-    return Lists.newArrayList(new Team(UUID.randomUUID().toString()));
+    Map<String, String> conditions = new HashMap<String, String>();
+    conditions.put(Team.OWNER_UUID, authUser.getUUID());
+    try {
+      return collectionMapper.list(Team.class, conditions);
+    } catch (InstantiationException | IllegalAccessException e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
   }
 
   @Timed
   @POST
-  public Team create(@Valid Team team) {
-    return team;
+  public Team create(@Auth User authUser, @Valid Team team) {
+    try {
+      if (null == team.getUUID()) {
+        team = Team.newTeam(team, authUser);
+      }
+      return collectionMapper.save(team);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
   }
 
+  @Timed
+  @PUT
+  public Team update(@Auth User authUser, @Valid Team team) {
+    try {
+      checkArgument(!Strings.isNullOrEmpty(team.getUUID()), "Team UUID required");
+      checkArgument(!Strings.isNullOrEmpty(team.getOwnerUUID()), "Team Owner UUID required");
+      checkArgument(!Strings.isNullOrEmpty(team.getName()), "Team name required");
+
+      return collectionMapper.save(team);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
+  }
 }
