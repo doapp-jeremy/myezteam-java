@@ -61,6 +61,7 @@ angular.module('team', ['restangular']).
       }).
       when('/events/edit/:uuid', {
         controller: function($scope, $location, Restangular, event) {
+          $scope.team = Restangular.one('teams', event.team_uuid).get();
           var original = event;
           $scope.event = Restangular.copy(original);
 
@@ -70,13 +71,13 @@ angular.module('team', ['restangular']).
 
           $scope.destroy = function() {
             original.remove().then(function() {
-              $location.path('/list');
+              $location.path('/' + event.team_uuid + "/events");
             });
           };
 
           $scope.save = function() {
             $scope.event.put().then(function() {
-              $location.path('/');
+              $location.path('/' + event.team_uuid + "/events");
             });
           };
         }, 
@@ -84,6 +85,22 @@ angular.module('team', ['restangular']).
         resolve: {
           event: function(Restangular, $route){
             return Restangular.one('events', $route.current.params.uuid).get();
+          }
+        }
+      }).
+      when('/:uuid/events/new', {controller: function($scope, $location, Restangular, team) {
+          $scope.team = team;
+          $scope.save = function() {
+            console.log($scope.event);
+            Restangular.all('events').post($scope.event).then(function(event) {
+              $location.path('/' + team.uuid + "/events");
+            });
+          }
+        },
+        templateUrl:'event_detail.html',
+        resolve: {
+          team: function(Restangular, $route){
+            return Restangular.one('teams', $route.current.params.uuid).get();
           }
         }
       }).
@@ -130,3 +147,19 @@ angular.module('team', ['restangular']).
       });
       
   });
+
+function RsvpCtrl($scope, Restangular) {
+  $scope.rsvps = [
+                  {name:'No Response'},
+                  {name:'Yes'},
+                  {name:'Probable'},
+                  {name:'Maybe'},
+                  {name:'No'},
+                  ];
+  if (typeof $scope.event === 'undefined') {
+    $scope.event = {  };
+  }
+  if (typeof $scope.event.default_rsvp === 'undefined') {
+    $scope.event.default_rsvp = $scope.rsvps[0].name;
+  }
+}
