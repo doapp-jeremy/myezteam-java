@@ -56,26 +56,10 @@
       </ul>
       <div>
         <tabset>
-          <tab heading="Events">
-      <input type="text" ng-model="search" class="search-query" placeholder="Search">
-      <table>
-        <thead>
-        <tr>
-          <th>Name</th>
-          <th><a href="#/{{team.uuid}}/events/new"><i class="icon-plus-sign"></i></a></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="event in events | filter:search | orderBy:'name'">
-          <td><a href="#/{{event.uuid}}">{{event.name}}</a></td>
-          <td>
-            <a href="#/events/edit/{{event.uuid}}"><i class="icon-pencil"></i></a>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-          </tab>
           <tab heading="Players">Players</tab>
+          <tab heading="Events">
+            <ng-include src="'events.html'" />
+          </tab>
         </tabset>
       </div>
     </script>

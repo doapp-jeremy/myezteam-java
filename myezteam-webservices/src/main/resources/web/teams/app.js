@@ -11,13 +11,13 @@ angular.module('team', ['restangular','ui.bootstrap']).
       when('/:uuid', {
         controller: function($scope, Restangular, team) {
           $scope['team'] = team;
-          $scope.events = team.getList('events');
+          //$scope.events = team.getList('events');
         },
         templateUrl:'view.html',
         resolve: {
           team: function(Restangular, $route) {
             return Restangular.one('teams', $route.current.params.uuid).get();
-          },
+          }
         }
       }).
       when('/:uuid/events', {
