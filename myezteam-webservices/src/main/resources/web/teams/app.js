@@ -92,6 +92,9 @@ angular.module('team', ['restangular']).
           $scope.team = team;
           $scope.save = function() {
             $scope.event.team_uuid = $scope.team.uuid;
+            // I'm not really sure why angular doesn't do this for me when creating a new one
+            var deafultRSVP = document.getElementById("newEventDefaultRSVP");
+            $scope.event.default_rsvp = deafultRSVP.options[deafultRSVP.selectedIndex].text;
             console.log($scope.event);
             Restangular.all('events').post($scope.event).then(function(event) {
               $location.path('/' + team.uuid + "/events");

@@ -96,32 +96,32 @@
     <script type="text/ng-template" id="event_detail.html">
       <h4>Add Event to {{team.name}}</h4>
       <form name="myForm">
-        <div class="control-group" ng-class="{error: myForm.name.$invalid}">
+        <div class="control-group" ng-class="{error: eventForm.name.$invalid}">
           <label>Name</label>
           <input type="text" name="name" ng-model="event.name" required>
-          <span ng-show="myForm.name.$error.required" class="help-inline">Required</span>
+          <span ng-show="eventForm.name.$error.required" class="help-inline">Required</span>
         </div>
-        <div class="control-group" ng-class="{error: myForm.start.$invalid}">
+        <div class="control-group" ng-class="{error: eventForm.start.$invalid}">
           <label>Start</label>
           <input type="datetime" name="start" ng-model="event.start" required>
-          <span ng-show="myForm.start.$error.required" class="help-inline">Required</span>
+          <span ng-show="eventForm.start.$error.required" class="help-inline">Required</span>
         </div>
-        <div class="control-group" ng-class="{error: myForm.end.$invalid}">
+        <div class="control-group" ng-class="{error: eventForm.end.$invalid}">
           <label>End</label>
           <input type="datetime" name="end" ng-model="event.end">
         </div>
-        <div class="control-group" ng-class="{error: myForm.location.$invalid}">
+        <div class="control-group" ng-class="{error: eventForm.location.$invalid}">
           <label>Location</label>
           <input type="text" name="location" ng-model="event.location">
         </div>
-        <div class="control-group" ng-class="{error: myForm.default_rsvp.$invalid}" ng-controller="RsvpCtrl">
+        <div class="control-group" ng-class="{error: eventForm.default_rsvp.$invalid}" ng-controller="RsvpCtrl">
           <label>Default RSVP</label>
-          <select required name="default_rsvp" ng-model="event.default_rsvp" ng-options="rsvp.name as rsvp.name for rsvp in rsvps">
+          <select id="newEventDefaultRSVP" required name="default_rsvp" ng-model="event.default_rsvp" ng-options="rsvp.name as rsvp.name for rsvp in rsvps">
           </select>
         </div>
         <br>
         <a href="#/{{team.uuid}}/events" class="btn">Cancel</a>
-        <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid" class="btn btn-primary">Save</button>
+        <button ng-click="save()" ng-disabled="isClean() || eventForm.$invalid" class="btn btn-primary">Save</button>
         <!-- <button ng-click="destroy()" ng-show="team.uuid" class="btn btn-danger">Delete</button> -->
       </form>
     </script>
