@@ -14,14 +14,15 @@ package com.myezteam.api;
  * @author jeremy
  * 
  */
-public class Event extends WsObject {
+public class Player extends WsObject {
   private static final long serialVersionUID = 1L;
 
-  public static final String EVENT = "event";
+  public static final String PLAYERS = "players";
   public static final String TEAM_UUID = "team_uuid";
   public static final String NAME = "name";
+  public static final String USER_UUID = "user_uuid";
 
-  public Event() {
+  public Player() {
     this(null);
   }
 
@@ -29,8 +30,8 @@ public class Event extends WsObject {
    * @param collection
    * @param uuid
    */
-  public Event(String uuid) {
-    super(EVENT, uuid);
+  public Player(String uuid) {
+    super(PLAYERS, uuid);
   }
 
   public String getName() {
@@ -42,8 +43,8 @@ public class Event extends WsObject {
    * @param authUser
    * @return
    */
-  public static Event newEvent(Event event) {
-    return (Event) WsObject.newObject(event);
+  public static Player newEvent(Player event) {
+    return (Player) WsObject.newObject(event);
   }
 
   /**
@@ -51,6 +52,10 @@ public class Event extends WsObject {
    */
   public String getTeamUUID() {
     return (String) get(TEAM_UUID);
+  }
+
+  public String getUserUUID() {
+    return (String) get(USER_UUID);
   }
 
 }

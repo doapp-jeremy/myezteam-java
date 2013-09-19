@@ -39,7 +39,7 @@
         </thead>
         <tbody>
         <tr ng-repeat="team in teams | filter:search | orderBy:'name'">
-          <td><a href="#/{{team.uuid}}">{{team.name}}</a></td>
+          <td><a href="#/view/{{team.uuid}}">{{team.name}}</a></td>
           <td>
             <a href="#/edit/{{team.uuid}}"><i class="icon-pencil"></i></a>
           </td>
@@ -56,9 +56,11 @@
       </ul>
       <div>
         <tabset>
-          <tab heading="Players">Players</tab>
           <tab heading="Events">
-            <ng-include src="'events.html'" />
+            <ng-include src="'events.html'"/>
+          </tab>
+          <tab heading="Players">
+            <ng-include src="'players.html'"/>
           </tab>
         </tabset>
       </div>
@@ -80,15 +82,14 @@
       </form>
     </script>
   
-    <!-- CACHE FILE: list.html -->
+    <!-- CACHE FILE: events.html -->
     <script type="text/ng-template" id="events.html">
-      <h3>{{ team.name }} Events</h3>
       <input type="text" ng-model="search" class="search-query" placeholder="Search">
       <table>
         <thead>
         <tr>
           <th>Name</th>
-          <th><a href="#/{{team.uuid}}/events/new"><i class="icon-plus-sign"></i></a></th>
+          <th><a href="#/view/{{team.uuid}}/events/new"><i class="icon-plus-sign"></i></a></th>
         </tr>
         </thead>
         <tbody>
@@ -101,11 +102,10 @@
         </tbody>
       </table>
     </script>
-  
-    <!-- CACHE FILE: detail.html -->
+    <!-- CACHE FILE: event_detail.html -->
     <script type="text/ng-template" id="event_detail.html">
       <h4>Add Event to {{team.name}}</h4>
-      <form name="myForm">
+      <form name="eventForm">
         <div class="control-group" ng-class="{error: eventForm.name.$invalid}">
           <label>Name</label>
           <input type="text" name="name" ng-model="event.name" required>
@@ -130,8 +130,56 @@
           </select>
         </div>
         <br>
-        <a href="#/{{team.uuid}}/events" class="btn">Cancel</a>
+        <a href="#/view/{{team.uuid}}/events" class="btn">Cancel</a>
         <button ng-click="save()" ng-disabled="isClean() || eventForm.$invalid" class="btn btn-primary">Save</button>
+        <!-- <button ng-click="destroy()" ng-show="team.uuid" class="btn btn-danger">Delete</button> -->
+      </form>
+    </script>
+    
+  
+    <!-- CACHE FILE: players.html -->
+    <script type="text/ng-template" id="players.html">
+      <input type="text" ng-model="search" class="search-query" placeholder="Search">
+      <table>
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th><a href="#/view/{{team.uuid}}/players/new"><i class="icon-plus-sign"></i></a></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="player in players | filter:search | orderBy:'name'">
+          <td><a href="#/{{player.uuid}}">{{player.name}}</a></td>
+          <td>
+            <a href="#/players/edit/{{player.uuid}}"><i class="icon-pencil"></i></a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </script>
+  
+    <!-- CACHE FILE: player_detail.html -->
+    <script type="text/ng-template" id="player_detail.html">
+      <h4>Add Player to {{team.name}}</h4>
+      <form name="playerForm">
+        <div class="control-group" ng-class="{error: playerForm.email.$invalid}">
+          <label>Email</label>
+          <input type="text" name="email" ng-model="player.email" required>
+          <span ng-show="playerForm.email.$error.required" class="help-inline">Required</span>
+        </div>
+        <div class="control-group" ng-class="{error: playerForm.name.$invalid}">
+          <label>Name</label>
+          <input type="text" name="name" ng-model="player.name" required>
+          <span ng-show="playerForm.name.$error.required" class="help-inline">Required</span>
+        </div>
+        <div class="control-group" ng-class="{error: playerForm.player_type.$invalid}" ng-controller="PlayerTypeCtrl">
+          <label>Player Type</label>
+          <select id="playerType" required name="player_type" ng-model="player.player_type" ng-options="player_type.name as player_type.name for player_type in player_types">
+          </select>
+        </div>
+        <br>
+        <a href="#/view/{{team.uuid}}/players" class="btn">Cancel</a>
+        <button ng-click="save()" ng-disabled="isClean() || playerForm.$invalid" class="btn btn-primary">Save</button>
         <!-- <button ng-click="destroy()" ng-show="team.uuid" class="btn btn-danger">Delete</button> -->
       </form>
     </script>

@@ -8,10 +8,12 @@ angular.module('team', ['restangular','ui.bootstrap']).
         }, 
         templateUrl:'list.html'
       }).
-      when('/:uuid', {
+      when('/view/:uuid', {
         controller: function($scope, Restangular, team) {
           $scope['team'] = team;
-          //$scope.events = team.getList('events');
+          // TODO: how to make this dynamic
+          $scope.events = team.getList('events');
+          $scope.players = team.getList('players');
         },
         templateUrl:'view.html',
         resolve: {
@@ -20,12 +22,33 @@ angular.module('team', ['restangular','ui.bootstrap']).
           }
         }
       }).
-      when('/:uuid/events', {
-        controller: function($scope, Restangular, team) {
+      when('/new', {controller: function($scope, $location, Restangular) {
+        $scope.save = function() {
+          Restangular.all('teams').post($scope.team).then(function(team) {
+            $location.path('/list');
+          });
+        }
+      },
+      templateUrl:'detail.html'
+      }).
+      when('/view/:uuid/events', {
+        controller: function($scope, $location, Restangular, team) {
           $scope['team'] = team;
           $scope.events = team.getList('events');
         },
         templateUrl:'events.html',
+        resolve: {
+          team: function(Restangular, $route) {
+            return Restangular.one('teams', $route.current.params.uuid).get();
+          }
+        }
+      }).
+      when('/view/:uuid/players', {
+        controller: function($scope, $location, Restangular, team) {
+          $scope['team'] = team;
+          $scope.players = team.getList('players');
+        },
+        templateUrl:'players.html',
         resolve: {
           team: function(Restangular, $route) {
             return Restangular.one('teams', $route.current.params.uuid).get();
@@ -89,7 +112,7 @@ angular.module('team', ['restangular','ui.bootstrap']).
           }
         }
       }).
-      when('/:uuid/events/new', {controller: function($scope, $location, Restangular, team) {
+      when('/view/:uuid/events/new', {controller: function($scope, $location, Restangular, team) {
           $scope.team = team;
           $scope.save = function() {
             $scope.event.team_uuid = $scope.team.uuid;
@@ -109,14 +132,54 @@ angular.module('team', ['restangular','ui.bootstrap']).
           }
         }
       }).
-      when('/new', {controller: function($scope, $location, Restangular) {
+      when('/players/edit/:uuid', {
+        controller: function($scope, $location, Restangular, player) {
+          $scope.team = Restangular.one('teams', player.team_uuid).get();
+          var original = event;
+          $scope.player = Restangular.copy(original);
+
+          $scope.isClean = function() {
+            return angular.equals(original, $scope['event']);
+          }
+
+          $scope.destroy = function() {
+            original.remove().then(function() {
+              $location.path('/' + player.team_uuid + "/players");
+            });
+          };
+
           $scope.save = function() {
-            Restangular.all('teams').post($scope.team).then(function(team) {
-              $location.path('/list');
+            $scope.event.put().then(function() {
+              $location.path('/' + player.team_uuid + "/players");
+            });
+          };
+        }, 
+        templateUrl:'player_detail.html',
+        resolve: {
+          player: function(Restangular, $route){
+            return Restangular.one('players', $route.current.params.uuid).get();
+          }
+        }
+      }).
+      when('/view/:uuid/players/new', {controller: function($scope, $location, Restangular, team) {
+          $scope.team = team;
+          $scope.save = function() {
+            $scope.player.team_uuid = $scope.team.uuid;
+            // I'm not really sure why angular doesn't do this for me when creating a new one
+            var playerType = document.getElementById("playerType");
+            $scope.player.player_type = playerType.options[playerType.selectedIndex].text;
+            console.log($scope.player);
+            Restangular.all('players').post($scope.player).then(function(player) {
+              $location.path('/' + team.uuid + "/players");
             });
           }
         },
-        templateUrl:'detail.html'
+        templateUrl:'player_detail.html',
+        resolve: {
+          team: function(Restangular, $route){
+            return Restangular.one('teams', $route.current.params.uuid).get();
+          }
+        }
       }).
       otherwise({redirectTo:'/'});
       
@@ -168,3 +231,18 @@ function RsvpCtrl($scope, Restangular) {
     $scope.event.default_rsvp = $scope.rsvps[0].name;
   }
 }
+
+function PlayerTypeCtrl($scope, Restangular) {
+  $scope.player_types = [
+                  {name:'Regular'},
+                  {name:'Sub'},
+                  {name:'Member'}
+                  ];
+  if (typeof $scope.player === 'undefined') {
+    $scope.player = {  };
+  }
+  if (typeof $scope.player.player_type === 'undefined') {
+    $scope.player.player_type = $scope.player_types[0].name;
+  }
+}
+

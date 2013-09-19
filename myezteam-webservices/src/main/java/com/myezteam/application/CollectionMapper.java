@@ -28,8 +28,8 @@ import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
 import com.amazonaws.services.dynamodbv2.model.GetItemResult;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
-import com.amazonaws.services.dynamodbv2.model.ScanResult;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
+import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -249,11 +249,19 @@ public class CollectionMapper {
       throws InstantiationException,
       IllegalAccessException {
     T object = klass.newInstance();
+    Map<String, Condition> keyConditions = new HashMap<String, Condition>();
+    keyConditions.put(
+        WsObject.COLLECTION,
+        new Condition().withComparisonOperator(ComparisonOperator.EQ).withAttributeValueList(
+            new AttributeValue(object.getCollection())));
     Map<String, AttributeValue> exclusiveStartKey = null;
     List<T> items = new ArrayList<T>();
     do {
-      ScanResult result = dynamoDB.scan(new ScanRequest(getTableName(object)).withScanFilter(scanFilter).withExclusiveStartKey(
-          exclusiveStartKey));
+      QueryResult result = dynamoDB.query(new QueryRequest(getTableName(object)).withKeyConditions(keyConditions)
+          .withExclusiveStartKey(exclusiveStartKey));
+      // ScanResult result = dynamoDB.scan(new
+      // ScanRequest(getTableName(object)).withScanFilter(scanFilter).withExclusiveStartKey(
+      // exclusiveStartKey));
       exclusiveStartKey = result.getLastEvaluatedKey();
       items.addAll(getObjectFromItems(klass, result.getItems()));
     } while (exclusiveStartKey != null);
@@ -262,10 +270,10 @@ public class CollectionMapper {
   }
 
   @SuppressWarnings("unchecked")
-  public <T extends WsObject> List<T> listWithConditions(Class<T> klass, Map<String, Condition> scanFilter)
+  public <T extends WsObject> List<T> listWithConditions(Class<T> klass, Map<String, Condition> conditions)
       throws InstantiationException,
       IllegalAccessException, ExecutionException {
-    return (List<T>) listCache.get(new ListRequest<T>(klass, scanFilter));
+    return (List<T>) listCache.get(new ListRequest<T>(klass, conditions));
   }
 
   /**
@@ -277,14 +285,14 @@ public class CollectionMapper {
    */
   public <T extends WsObject> List<T> list(Class<T> klass, Map<String, String> conditions) throws InstantiationException,
       IllegalAccessException, ExecutionException {
-    Map<String, Condition> scanFilter = new HashMap<String, Condition>();
+    Map<String, Condition> filter = new HashMap<String, Condition>();
     for (Entry<String, String> condition : conditions.entrySet()) {
-      scanFilter.put(
+      filter.put(
           condition.getKey(),
           new Condition().withComparisonOperator(ComparisonOperator.EQ).withAttributeValueList(
               new AttributeValue(condition.getValue())));
     }
-    return listWithConditions(klass, scanFilter);
+    return listWithConditions(klass, filter);
   }
 
 }

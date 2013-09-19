@@ -29,8 +29,10 @@ import com.codahale.dropwizard.auth.Auth;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.myezteam.api.Event;
+import com.myezteam.api.Player;
 import com.myezteam.api.Team;
 import com.myezteam.api.User;
+import com.myezteam.api.WsObject;
 import com.myezteam.application.AwsConfiguration;
 import com.myezteam.application.CollectionMapper;
 
@@ -91,6 +93,7 @@ public class TeamResource {
   @GET
   public List<Team> list(@Auth User authUser) {
     Map<String, String> conditions = new HashMap<String, String>();
+    conditions.put(WsObject.COLLECTION, Team.TEAMS);
     conditions.put(Team.OWNER_UUID, authUser.getUUID());
     try {
       return collectionMapper.list(Team.class, conditions);
@@ -108,6 +111,20 @@ public class TeamResource {
     conditions.put(Event.TEAM_UUID, uuid);
     try {
       return collectionMapper.list(Event.class, conditions);
+    } catch (ExecutionException | InstantiationException | IllegalAccessException e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
+  }
+
+  @Timed
+  @GET
+  @Path(UUID_PATH + "/players")
+  public List<Player> players(@Auth User authUser, @PathParam(UUID) String uuid) {
+    Map<String, String> conditions = new HashMap<String, String>();
+    conditions.put(Player.TEAM_UUID, uuid);
+    try {
+      return collectionMapper.list(Player.class, conditions);
     } catch (ExecutionException | InstantiationException | IllegalAccessException e) {
       e.printStackTrace();
       throw new WebApplicationException(e);

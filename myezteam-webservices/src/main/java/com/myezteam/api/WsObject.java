@@ -12,6 +12,7 @@ package com.myezteam.api;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import java.util.HashMap;
+import java.util.Map;
 import com.google.common.base.Strings;
 
 
@@ -26,6 +27,10 @@ public class WsObject extends HashMap<String, Object> {
 
   private final String tableName;
 
+  private WsObject() {
+    this(null, null);
+  }
+
   protected WsObject(String collection, String uuid, String tableName) {
     super();
     put(COLLECTION, collection);
@@ -33,7 +38,7 @@ public class WsObject extends HashMap<String, Object> {
     this.tableName = tableName;
   }
 
-  protected WsObject(String collection, String uuid) {
+  public WsObject(String collection, String uuid) {
     this(collection, uuid, null);
   }
 
@@ -106,5 +111,20 @@ public class WsObject extends HashMap<String, Object> {
   public boolean equals(Object object) {
     if (object instanceof WsObject) { return hashCode() == object.hashCode(); }
     return false;
+  }
+
+  /**
+   * @param wsObject
+   * @return
+   */
+  protected static WsObject newObject(WsObject wsObject) {
+    wsObject.put(UUID, java.util.UUID.randomUUID().toString());
+    return wsObject;
+  }
+
+  public static WsObject newObject(String collection, Map<String, Object> object) {
+    WsObject wsObject = new WsObject(collection, java.util.UUID.randomUUID().toString());
+    wsObject.putAll(object);
+    return wsObject;
   }
 }

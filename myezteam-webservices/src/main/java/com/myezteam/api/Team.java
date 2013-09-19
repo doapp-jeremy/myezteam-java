@@ -17,7 +17,7 @@ package com.myezteam.api;
 public class Team extends WsObject {
   private static final long serialVersionUID = 1L;
 
-  public static final String TEAM = "team";
+  public static final String TEAMS = "teams";
   public static final String NAME = "name";
   public static final String OWNER_UUID = "owner_uuid";
 
@@ -30,7 +30,7 @@ public class Team extends WsObject {
    * @param uuid
    */
   public Team(String uuid) {
-    super(TEAM, uuid);
+    super(TEAMS, uuid);
   }
 
   public String getName() {
@@ -51,7 +51,7 @@ public class Team extends WsObject {
    * @return
    */
   public static Team newTeam(Team team, User owner) {
-    team.put(UUID, java.util.UUID.randomUUID().toString());
+    team = (Team) WsObject.newObject(team);
     team.put(OWNER_UUID, owner.getUUID());
     return team;
   }
