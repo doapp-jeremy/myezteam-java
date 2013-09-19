@@ -93,7 +93,7 @@ public class CollectionMapper {
         @SuppressWarnings("unchecked")
         @Override
         public List<WsObject> load(ListRequest listRequest) throws Exception {
-          return scan(listRequest.klass, listRequest.scanFilter);
+          return query(listRequest.klass, listRequest.scanFilter);
         };
       });
 
@@ -245,7 +245,7 @@ public class CollectionMapper {
     return object;
   }
 
-  private <T extends WsObject> List<T> scan(Class<T> klass, Map<String, Condition> scanFilter)
+  private <T extends WsObject> List<T> query(Class<T> klass, Map<String, Condition> scanFilter)
       throws InstantiationException,
       IllegalAccessException {
     T object = klass.newInstance();
@@ -259,9 +259,6 @@ public class CollectionMapper {
     do {
       QueryResult result = dynamoDB.query(new QueryRequest(getTableName(object)).withKeyConditions(keyConditions)
           .withExclusiveStartKey(exclusiveStartKey));
-      // ScanResult result = dynamoDB.scan(new
-      // ScanRequest(getTableName(object)).withScanFilter(scanFilter).withExclusiveStartKey(
-      // exclusiveStartKey));
       exclusiveStartKey = result.getLastEvaluatedKey();
       items.addAll(getObjectFromItems(klass, result.getItems()));
     } while (exclusiveStartKey != null);
