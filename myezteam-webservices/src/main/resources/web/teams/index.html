@@ -96,7 +96,6 @@
     <script type="text/ng-template" id="event_detail.html">
       <h4>Add Event to {{team.name}}</h4>
       <form name="myForm">
-        <input type='hidden' name="team_uuid" ng-model="event.team_uuid" value="{{team.uuid}}" />
         <div class="control-group" ng-class="{error: myForm.name.$invalid}">
           <label>Name</label>
           <input type="text" name="name" ng-model="event.name" required>
@@ -121,7 +120,7 @@
           </select>
         </div>
         <br>
-        <a href="#/" class="btn">Cancel</a>
+        <a href="#/{{team.uuid}}/events" class="btn">Cancel</a>
         <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid" class="btn btn-primary">Save</button>
         <!-- <button ng-click="destroy()" ng-show="team.uuid" class="btn btn-danger">Delete</button> -->
       </form>

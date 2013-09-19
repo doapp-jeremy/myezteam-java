@@ -91,6 +91,7 @@ angular.module('team', ['restangular']).
       when('/:uuid/events/new', {controller: function($scope, $location, Restangular, team) {
           $scope.team = team;
           $scope.save = function() {
+            $scope.event.team_uuid = $scope.team.uuid;
             console.log($scope.event);
             Restangular.all('events').post($scope.event).then(function(event) {
               $location.path('/' + team.uuid + "/events");
