@@ -1,5 +1,5 @@
 var token = localStorage.getItem("token");
-angular.module('team', ['restangular']).
+angular.module('team', ['restangular','ui.bootstrap']).
   config(function($routeProvider, RestangularProvider) {
     $routeProvider.
       when('/', {
