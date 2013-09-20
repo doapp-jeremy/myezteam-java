@@ -22,11 +22,12 @@
 
   <body>
     <div ng-app="player">
-	    <h2>My Players</h2>
+	    <h2>My Teams</h2>
 	    <div ng-view></div>
   
     <!-- CACHE FILE: list.html -->
     <script type="text/ng-template" id="list.html">
+      <h3>My Players</h3>
       <input type="text" ng-model="search" class="search-query" placeholder="Search">
       <table>
         <thead>
@@ -42,125 +43,24 @@
         </tr>
         </tbody>
       </table>
-    </script>
-  
-    <!-- CACHE FILE: view.html -->
-    <script type="text/ng-template" id="view.html">
-      <h3>{{ team.name }}</h3>
-      <ul>
-        <li>Owner: {{team.owner_uuid}}</li>
-      </ul>
-      <div>
-        <tabset>
-          <tab heading="Events">
-            <ng-include src="'events.html'"/>
-          </tab>
-          <tab heading="Players">
-            <ng-include src="'players.html'"/>
-          </tab>
-        </tabset>
-      </div>
-    </script>
-  
-    <!-- CACHE FILE: detail.html -->
-    <script type="text/ng-template" id="detail.html">
-      <form name="myForm">
-        <div class="control-group" ng-class="{error: myForm.name.$invalid}">
-          <label>Name</label>
-          <input type="text" name="name" ng-model="team.name" required>
-          <span ng-show="myForm.name.$error.required" class="help-inline"> Required</span>
-        </div>
-      
-        <br>
-        <a href="#/" class="btn">Cancel</a>
-        <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid" class="btn btn-primary">Save</button>
-        <!-- <button ng-click="destroy()" ng-show="team.uuid" class="btn btn-danger">Delete</button> -->
-      </form>
-    </script>
-  
-    <!-- CACHE FILE: events.html -->
-    <script type="text/ng-template" id="events.html">
+      <h3>My Teams</h3>
       <input type="text" ng-model="search" class="search-query" placeholder="Search">
       <table>
         <thead>
         <tr>
           <th>Name</th>
-          <th><a href="#/view/{{team.uuid}}/events/new"><i class="icon-plus-sign"></i></a></th>
+          <th><a href="#/new"><i class="icon-plus-sign"></i></a></th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="event in events | filter:search | orderBy:'name'">
-          <td><a href="#/{{event.uuid}}">{{event.name}}</a></td>
+        <tr ng-repeat="team in teams | filter:search | orderBy:'name'">
+          <td><a href="/teams/index.html#/view/{{team.uuid}}">{{team.name}}</a></td>
           <td>
-            <a href="#/events/edit/{{event.uuid}}"><i class="icon-pencil"></i></a>
+            <a href="#/edit/{{team.uuid}}"><i class="icon-pencil"></i></a>
           </td>
         </tr>
         </tbody>
       </table>
-    </script>
-    <!-- CACHE FILE: event_detail.html -->
-    <script type="text/ng-template" id="event_detail.html">
-      <h4>Add Event to {{team.name}}</h4>
-      <form name="eventForm">
-        <div class="control-group" ng-class="{error: eventForm.name.$invalid}">
-          <label>Name</label>
-          <input type="text" name="name" ng-model="event.name" required>
-          <span ng-show="eventForm.name.$error.required" class="help-inline">Required</span>
-        </div>
-        <div class="control-group" ng-class="{error: eventForm.start.$invalid}">
-          <label>Start</label>
-          <input type="datetime" name="start" ng-model="event.start" required>
-          <span ng-show="eventForm.start.$error.required" class="help-inline">Required</span>
-        </div>
-        <div class="control-group" ng-class="{error: eventForm.end.$invalid}">
-          <label>End</label>
-          <input type="datetime" name="end" ng-model="event.end">
-        </div>
-        <div class="control-group" ng-class="{error: eventForm.location.$invalid}">
-          <label>Location</label>
-          <input type="text" name="location" ng-model="event.location">
-        </div>
-        <div class="control-group" ng-class="{error: eventForm.default_rsvp.$invalid}" ng-controller="RsvpCtrl">
-          <label>Default RSVP</label>
-          <select id="newEventDefaultRSVP" required name="default_rsvp" ng-model="event.default_rsvp" ng-options="rsvp.name as rsvp.name for rsvp in rsvps">
-          </select>
-        </div>
-        <br>
-        <a href="#/view/{{team.uuid}}/events" class="btn">Cancel</a>
-        <button ng-click="save()" ng-disabled="isClean() || eventForm.$invalid" class="btn btn-primary">Save</button>
-        <!-- <button ng-click="destroy()" ng-show="team.uuid" class="btn btn-danger">Delete</button> -->
-      </form>
-    </script>
-    
-  
-    <!-- CACHE FILE: players.html -->
-    <script type="text/ng-template" id="players.html">
-      <input type="text" ng-model="search" class="search-query" placeholder="Search">
-      <table>
-        <thead>
-        <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Email</th>
-          <th>Type</th>
-          <th><a href="#/view/{{team.uuid}}/players/new"><i class="icon-plus-sign"></i></a></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="player in players | filter:search | orderBy:'first_name'">
-          <td>{{player.first_name}}</td>
-          <td>{{player.last_name}}</td>
-          <td><a href="#/players/view/{{player.uuid}}">{{player.user_uuid}}</a></td>
-          <td>{{player.player_type}}</td>
-          <td><a href="#/players/edit/{{player.uuid}}"><i class="icon-pencil"></i></a></td>
-        </tr>
-        </tbody>
-      </table>
-    </script>
-  
-      <!-- CACHE FILE: player_form.html -->
-    <script type="text/ng-template" id="player_form.html">
-      <ng-include src="'/partials/player_form.html'" />
     </script>
   
   </div>

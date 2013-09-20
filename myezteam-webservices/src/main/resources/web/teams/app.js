@@ -101,7 +101,7 @@ angular.module('team', ['restangular','ui.bootstrap']).
 
           $scope.save = function() {
             $scope.event.put().then(function() {
-              $location.path('/' + event.team_uuid + "/events");
+              $location.path('/' + event.team_uuid);
             });
           };
         }, 
@@ -109,6 +109,29 @@ angular.module('team', ['restangular','ui.bootstrap']).
         resolve: {
           event: function(Restangular, $route){
             return Restangular.one('events', $route.current.params.uuid).get();
+          }
+        }
+      }).
+      when('/view/:teamUUID/events/view/:eventUUID', {
+        controller: function($scope, $location, Restangular, team, event, responses, emails) {
+          $scope.team = team;
+          $scope.event = event;
+          $scope.responses = responses;
+          $scope.emails = emails;
+        }, 
+        templateUrl:'event.html',
+        resolve: {
+          team: function(Restangular, $route){
+            return Restangular.one('teams', $route.current.params.teamUUID).get();
+          },
+          event: function(Restangular, $route){
+            return Restangular.one('events', $route.current.params.eventUUID).get();
+          },
+          responses: function(Restangular, $route){
+            return Restangular.all('events/' + $route.current.params.eventUUID + '/responses').getList();
+          },
+          emails: function(Restangular, $route){
+            return Restangular.all('events/' + $route.current.params.eventUUID + '/emails').getList();
           }
         }
       }).

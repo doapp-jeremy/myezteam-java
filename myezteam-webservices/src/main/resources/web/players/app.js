@@ -4,6 +4,7 @@ angular.module('player', ['restangular','ui.bootstrap']).
     $routeProvider.
       when('/', {
         controller: function($scope, Restangular) {
+          $scope.teams = Restangular.all('teams').getList();
           Restangular.all('players').getList().then(function(players){
             $scope.players = players;
             console.log($scope.players);

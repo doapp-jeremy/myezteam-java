@@ -22,7 +22,6 @@
 
   <body>
     <div ng-app="team">
-	    <h2>My Teams</h2>
 	    <div ng-view></div>
   
   
@@ -94,7 +93,7 @@
         </thead>
         <tbody>
         <tr ng-repeat="event in events | filter:search | orderBy:'name'">
-          <td><a href="#/{{event.uuid}}">{{event.name}}</a></td>
+          <td><a href="#/view/{{event.team_uuid}}/events/view/{{event.uuid}}">{{event.name}}</a></td>
           <td>
             <a href="#/events/edit/{{event.uuid}}"><i class="icon-pencil"></i></a>
           </td>
@@ -102,6 +101,7 @@
         </tbody>
       </table>
     </script>
+    
     <!-- CACHE FILE: event_detail.html -->
     <script type="text/ng-template" id="event_detail.html">
       <h4>Add Event to {{team.name}}</h4>
@@ -136,6 +136,48 @@
       </form>
     </script>
     
+    <!-- CACHE FILE: event.html -->
+    <script type="text/ng-template" id="event.html">
+      <ul>
+        <li>Team {{team.name}}</li>
+        <li>Name {{event.name}}</li>
+        <li>Start {{event.start}}</li>
+      </ul>
+      <div>
+        <tabset>
+          <tab heading="RSVPs">
+            <ng-include src="'rsvps.html'"/>
+          </tab>
+          <tab heading="Emails">
+            
+          </tab>
+        </tabset>
+      </div>
+    </script>
+    
+    <!-- CACHE FILE: rsvps.html.html -->
+    <script type="text/ng-template" id="rsvps.html">
+      <input type="text" ng-model="search" class="search-query" placeholder="Search">
+      <table>
+        <thead>
+        <tr>
+          <th>Email</th>
+          <th>Response</th>
+          <th>When</th>
+          <th>Note</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="response in responses | filter:search | orderBy:'first_name'">
+          <td>{{response.user_uuid}}</td>
+          <td>{{response.response}}</td>
+          <td>{{response.created}}</td>
+          <td>{{response.note}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </script>
+    
   
     <!-- CACHE FILE: players.html -->
     <script type="text/ng-template" id="players.html">
@@ -162,7 +204,7 @@
       </table>
     </script>
   
-      <!-- CACHE FILE: player_form.html -->
+    <!-- CACHE FILE: player_form.html -->
     <script type="text/ng-template" id="player_form.html">
             <h4>Add Player to {{team.name}}</h4>
       <form name="playerForm">
@@ -193,6 +235,8 @@
       </form>
 
     </script>
+  
+  
   
   </div>
 

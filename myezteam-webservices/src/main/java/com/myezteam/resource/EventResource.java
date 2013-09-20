@@ -11,6 +11,10 @@
 package com.myezteam.resource;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -24,7 +28,9 @@ import javax.ws.rs.core.MediaType;
 import com.codahale.dropwizard.auth.Auth;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
+import com.myezteam.api.Email;
 import com.myezteam.api.Event;
+import com.myezteam.api.Response;
 import com.myezteam.api.User;
 import com.myezteam.application.AwsConfiguration;
 import com.myezteam.application.CollectionMapper;
@@ -87,6 +93,34 @@ public class EventResource {
 
       return collectionMapper.save(event);
     } catch (Exception e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
+  }
+
+  @Timed
+  @GET
+  @Path(UUID_PATH + "/responses")
+  public List<Response> events(@Auth User authUser, @PathParam(UUID) String uuid) {
+    Map<String, String> conditions = new HashMap<String, String>();
+    conditions.put(Response.EVENT_UUID, uuid);
+    try {
+      return collectionMapper.list(Response.class, conditions);
+    } catch (ExecutionException | InstantiationException | IllegalAccessException e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
+  }
+
+  @Timed
+  @GET
+  @Path(UUID_PATH + "/emails")
+  public List<Email> emails(@Auth User authUser, @PathParam(UUID) String uuid) {
+    Map<String, String> conditions = new HashMap<String, String>();
+    conditions.put(Response.EVENT_UUID, uuid);
+    try {
+      return collectionMapper.list(Email.class, conditions);
+    } catch (ExecutionException | InstantiationException | IllegalAccessException e) {
       e.printStackTrace();
       throw new WebApplicationException(e);
     }
