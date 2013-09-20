@@ -154,7 +154,7 @@ angular.module('team', ['restangular','ui.bootstrap']).
             });
           };
         }, 
-        templateUrl:'player_detail.html',
+        templateUrl:'player_form.html',
         resolve: {
           player: function(Restangular, $route){
             return Restangular.one('players', $route.current.params.uuid).get();
@@ -174,7 +174,7 @@ angular.module('team', ['restangular','ui.bootstrap']).
             });
           }
         },
-        templateUrl:'player_detail.html',
+        templateUrl:'player_form.html',
         resolve: {
           team: function(Restangular, $route){
             return Restangular.one('teams', $route.current.params.uuid).get();

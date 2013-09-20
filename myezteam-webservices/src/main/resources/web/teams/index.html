@@ -162,35 +162,9 @@
       </table>
     </script>
   
-    <!-- CACHE FILE: player_detail.html -->
-    <script type="text/ng-template" id="player_detail.html">
-      <h4>Add Player to {{team.name}}</h4>
-      <form name="playerForm">
-        <div class="control-group" ng-class="{error: playerForm.user_uuid.$invalid}">
-          <label>Email</label>
-          <input type="text" name="user_uuid" ng-model="player.user_uuid" required>
-          <span ng-show="playerForm.user_uuid.$error.required" class="help-inline">Required</span>
-        </div>
-        <div class="control-group" ng-class="{error: playerForm.first_name.$invalid}">
-          <label>First Name</label>
-          <input type="text" name="first_name" ng-model="player.first_name" required>
-          <span ng-show="playerForm.first_name.$error.required" class="help-inline">Required</span>
-        </div>
-        <div class="control-group" ng-class="{error: playerForm.last_name.$invalid}">
-          <label>Last Name</label>
-          <input type="text" name="last_name" ng-model="player.last_name" required>
-          <span ng-show="playerForm.last_name.$error.required" class="help-inline">Required</span>
-        </div>
-        <div class="control-group" ng-class="{error: playerForm.player_type.$invalid}" ng-controller="PlayerTypeCtrl">
-          <label>Player Type</label>
-          <select id="playerType" required name="player_type" ng-model="player.player_type" ng-options="player_type.name as player_type.name for player_type in player_types">
-          </select>
-        </div>
-        <br>
-        <a href="#/view/{{team.uuid}}/players" class="btn">Cancel</a>
-        <button ng-click="save()" ng-disabled="isClean() || playerForm.$invalid" class="btn btn-primary">Save</button>
-        <!-- <button ng-click="destroy()" ng-show="team.uuid" class="btn btn-danger">Delete</button> -->
-      </form>
+      <!-- CACHE FILE: player_form.html -->
+    <script type="text/ng-template" id="player_form.html">
+      <ng-include src="'/partials/player_form.html'" />
     </script>
   
   </div>
