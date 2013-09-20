@@ -143,16 +143,20 @@
       <table>
         <thead>
         <tr>
-          <th>Name</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Type</th>
           <th><a href="#/view/{{team.uuid}}/players/new"><i class="icon-plus-sign"></i></a></th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="player in players | filter:search | orderBy:'name'">
-          <td><a href="#/{{player.uuid}}">{{player.name}}</a></td>
-          <td>
-            <a href="#/players/edit/{{player.uuid}}"><i class="icon-pencil"></i></a>
-          </td>
+        <tr ng-repeat="player in players | filter:search | orderBy:'first_name'">
+          <td>{{player.first_name}}</td>
+          <td>{{player.last_name}}</td>
+          <td><a href="#/players/view/{{player.uuid}}">{{player.user_uuid}}</a></td>
+          <td>{{player.player_type}}</td>
+          <td><a href="#/players/edit/{{player.uuid}}"><i class="icon-pencil"></i></a></td>
         </tr>
         </tbody>
       </table>
@@ -162,15 +166,20 @@
     <script type="text/ng-template" id="player_detail.html">
       <h4>Add Player to {{team.name}}</h4>
       <form name="playerForm">
-        <div class="control-group" ng-class="{error: playerForm.email.$invalid}">
+        <div class="control-group" ng-class="{error: playerForm.user_uuid.$invalid}">
           <label>Email</label>
-          <input type="text" name="email" ng-model="player.email" required>
-          <span ng-show="playerForm.email.$error.required" class="help-inline">Required</span>
+          <input type="text" name="user_uuid" ng-model="player.user_uuid" required>
+          <span ng-show="playerForm.user_uuid.$error.required" class="help-inline">Required</span>
         </div>
-        <div class="control-group" ng-class="{error: playerForm.name.$invalid}">
-          <label>Name</label>
-          <input type="text" name="name" ng-model="player.name" required>
-          <span ng-show="playerForm.name.$error.required" class="help-inline">Required</span>
+        <div class="control-group" ng-class="{error: playerForm.first_name.$invalid}">
+          <label>First Name</label>
+          <input type="text" name="first_name" ng-model="player.first_name" required>
+          <span ng-show="playerForm.first_name.$error.required" class="help-inline">Required</span>
+        </div>
+        <div class="control-group" ng-class="{error: playerForm.last_name.$invalid}">
+          <label>Last Name</label>
+          <input type="text" name="last_name" ng-model="player.last_name" required>
+          <span ng-show="playerForm.last_name.$error.required" class="help-inline">Required</span>
         </div>
         <div class="control-group" ng-class="{error: playerForm.player_type.$invalid}" ng-controller="PlayerTypeCtrl">
           <label>Player Type</label>

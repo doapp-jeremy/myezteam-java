@@ -11,7 +11,6 @@
 package com.myezteam.resource;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import java.util.Map;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -25,8 +24,9 @@ import javax.ws.rs.core.MediaType;
 import com.codahale.dropwizard.auth.Auth;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
+import com.myezteam.api.Event;
+import com.myezteam.api.Player;
 import com.myezteam.api.User;
-import com.myezteam.api.WsObject;
 import com.myezteam.application.AwsConfiguration;
 import com.myezteam.application.CollectionMapper;
 
@@ -35,28 +35,26 @@ import com.myezteam.application.CollectionMapper;
  * @author jeremy
  * 
  */
-@Path("/")
+@Path("/players")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class GenericCollectionResource {
+public class PlayerResource {
   static final String UUID = "uuid";
   static final String UUID_PATH = "/{" + UUID + "}";
-  static final String COLLECTION = "collection";
-  static final String COLLECTION_PATH = "/{" + COLLECTION + "}";
 
   private final CollectionMapper collectionMapper;
 
-  public GenericCollectionResource(AwsConfiguration awsConfiguration) {
+  public PlayerResource(AwsConfiguration awsConfiguration) {
     this.collectionMapper = CollectionMapper.getInstance(awsConfiguration);
   }
 
   @Timed
   @GET
-  @Path(COLLECTION_PATH + UUID_PATH)
-  public WsObject get(@Auth User authUser, @PathParam(COLLECTION) String collection, @PathParam(UUID) String uuid) {
+  @Path(UUID_PATH)
+  public Player get(@Auth User authUser, @PathParam(UUID) String uuid) {
     try {
       checkArgument(!Strings.isNullOrEmpty(uuid), "UUID is empty");
-      return collectionMapper.get(new WsObject(collection, uuid));
+      return collectionMapper.get(new Player(uuid));
     } catch (Exception e) {
       e.printStackTrace();
       throw new WebApplicationException(e);
@@ -65,19 +63,25 @@ public class GenericCollectionResource {
 
   @Timed
   @POST
-  @Path(COLLECTION_PATH)
-  public WsObject create(@Auth User authUser, @PathParam(COLLECTION) String collection, @Valid Map<String, Object> object) {
+  public Player create(@Auth User authUser, @Valid Player player) {
     try {
-      checkArgument(!Strings.isNullOrEmpty(collection), "Collection required");
-      WsObject wsObject;
-      if (null == object.get(WsObject.UUID)) {
-        wsObject = WsObject.newObject(collection, object);
+      checkArgument(!Strings.isNullOrEmpty(player.getPlayerType()), "Player Type required");
+      checkArgument(!Strings.isNullOrEmpty(player.getUserUUID()), "User UUID required");
+      checkArgument(!Strings.isNullOrEmpty(player.getTeamUUID()), "Team UUID required");
+      if (null == player.getUUID()) {
+        player = Player.newPlayer(player);
       }
-      else {
-        wsObject = new WsObject(collection, (String) object.get(WsObject.UUID));
-        wsObject.putAll(object);
-      }
-      return collectionMapper.save(wsObject);
+
+      // // look up user's email
+      // User user = collectionMapper.get(player.getUser());
+      // if (user == null) {
+      // // create the user
+      // user = player.getUser();
+      // user.setName(player.getFirstName(), player.getLastName());
+      // collectionMapper.save(user);
+      // }
+
+      return collectionMapper.save(player);
     } catch (Exception e) {
       e.printStackTrace();
       throw new WebApplicationException(e);
@@ -86,16 +90,14 @@ public class GenericCollectionResource {
 
   @Timed
   @PUT
-  @Path(COLLECTION_PATH + UUID_PATH)
-  public WsObject update(@Auth User authUser, @PathParam(COLLECTION) String collection, @PathParam(UUID) String uuid,
-      @Valid WsObject object) {
+  @Path(UUID_PATH)
+  public Event update(@Auth User authUser, @PathParam(UUID) String uuid, @Valid Event event) {
     try {
-      checkArgument(!Strings.isNullOrEmpty(collection), "Collection required");
-      checkArgument(!Strings.isNullOrEmpty(uuid), "UUID required");
-      checkArgument(uuid.equals(object.getUUID()), "UUID's do not match");
+      checkArgument(!Strings.isNullOrEmpty(uuid), "Event UUID required");
+      checkArgument(uuid.equals(event.getUUID()), "Event UUID's do not match");
+      checkArgument(!Strings.isNullOrEmpty(event.getName()), "Name required");
 
-      object.put(WsObject.COLLECTION, collection);
-      return collectionMapper.save(object);
+      return collectionMapper.save(event);
     } catch (Exception e) {
       e.printStackTrace();
       throw new WebApplicationException(e);

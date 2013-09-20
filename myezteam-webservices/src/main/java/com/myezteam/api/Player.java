@@ -19,8 +19,10 @@ public class Player extends WsObject {
 
   public static final String PLAYERS = "players";
   public static final String TEAM_UUID = "team_uuid";
-  public static final String NAME = "name";
+  public static final String FIRST_NAME = "first_name";
+  public static final String LAST_NAME = "last_name";
   public static final String USER_UUID = "user_uuid";
+  public static final Object PLAYER_TYPE = "player_type";
 
   public Player() {
     this(null);
@@ -34,8 +36,12 @@ public class Player extends WsObject {
     super(PLAYERS, uuid);
   }
 
-  public String getName() {
-    return (String) super.get(NAME);
+  public String getFirstName() {
+    return (String) super.get(FIRST_NAME);
+  }
+
+  public String getLastName() {
+    return (String) super.get(LAST_NAME);
   }
 
   /**
@@ -56,6 +62,28 @@ public class Player extends WsObject {
 
   public String getUserUUID() {
     return (String) get(USER_UUID);
+  }
+
+  /**
+   * @param player
+   * @return
+   */
+  public static Player newPlayer(Player player) {
+    return (Player) WsObject.newObject(player);
+  }
+
+  /**
+   * @return
+   */
+  public String getPlayerType() {
+    return (String) super.get(PLAYER_TYPE);
+  }
+
+  /**
+   * @return
+   */
+  public User getUser() {
+    return new User(getUserUUID());
   }
 
 }

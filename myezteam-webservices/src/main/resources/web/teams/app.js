@@ -135,11 +135,11 @@ angular.module('team', ['restangular','ui.bootstrap']).
       when('/players/edit/:uuid', {
         controller: function($scope, $location, Restangular, player) {
           $scope.team = Restangular.one('teams', player.team_uuid).get();
-          var original = event;
+          var original = player;
           $scope.player = Restangular.copy(original);
 
           $scope.isClean = function() {
-            return angular.equals(original, $scope['event']);
+            return angular.equals(original, $scope['player']);
           }
 
           $scope.destroy = function() {
@@ -149,7 +149,7 @@ angular.module('team', ['restangular','ui.bootstrap']).
           };
 
           $scope.save = function() {
-            $scope.event.put().then(function() {
+            $scope.player.put().then(function() {
               $location.path('/' + player.team_uuid + "/players");
             });
           };
