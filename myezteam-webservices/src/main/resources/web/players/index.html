@@ -21,11 +21,9 @@
   </head>
 
   <body>
-    <div ng-app="team">
-	    <h2>My Teams</h2>
+    <div ng-app="player">
+	    <h2>My Players</h2>
 	    <div ng-view></div>
-  
-  
   
     <!-- CACHE FILE: list.html -->
     <script type="text/ng-template" id="list.html">
@@ -33,16 +31,14 @@
       <table>
         <thead>
         <tr>
-          <th>Name</th>
-          <th><a href="#/new"><i class="icon-plus-sign"></i></a></th>
+          <th>Team</th>
+          <th>Player Type</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="team in teams | filter:search | orderBy:'name'">
-          <td><a href="#/view/{{team.uuid}}">{{team.name}}</a></td>
-          <td>
-            <a href="#/edit/{{team.uuid}}"><i class="icon-pencil"></i></a>
-          </td>
+        <tr ng-repeat="player in players | filter:search | orderBy:'name'">
+          <td><a href="/teams/index.html#/view/{{player.team_uuid}}">{{teamsById[player.team_uuid].name}}</a></td>
+          <td>{{player.player_type}}</a></td>
         </tr>
         </tbody>
       </table>
@@ -164,34 +160,7 @@
   
       <!-- CACHE FILE: player_form.html -->
     <script type="text/ng-template" id="player_form.html">
-            <h4>Add Player to {{team.name}}</h4>
-      <form name="playerForm">
-        <div class="control-group" ng-class="{error: playerForm.user_uuid.$invalid}">
-          <label>Email</label>
-          <input type="text" name="user_uuid" ng-model="player.user_uuid" required>
-          <span ng-show="playerForm.user_uuid.$error.required" class="help-inline">Required</span>
-        </div>
-        <div class="control-group" ng-class="{error: playerForm.first_name.$invalid}">
-          <label>First Name</label>
-          <input type="text" name="first_name" ng-model="player.first_name" required>
-          <span ng-show="playerForm.first_name.$error.required" class="help-inline">Required</span>
-        </div>
-        <div class="control-group" ng-class="{error: playerForm.last_name.$invalid}">
-          <label>Last Name</label>
-          <input type="text" name="last_name" ng-model="player.last_name" required>
-          <span ng-show="playerForm.last_name.$error.required" class="help-inline">Required</span>
-        </div>
-        <div class="control-group" ng-class="{error: playerForm.player_type.$invalid}" ng-controller="PlayerTypeCtrl">
-          <label>Player Type</label>
-          <select id="playerType" required name="player_type" ng-model="player.player_type" ng-options="player_type.name as player_type.name for player_type in player_types">
-          </select>
-        </div>
-        <br>
-        <a href="#/view/{{team.uuid}}/players" class="btn">Cancel</a>
-        <button ng-click="save()" ng-disabled="isClean() || playerForm.$invalid" class="btn btn-primary">Save</button>
-        <!-- <button ng-click="destroy()" ng-show="team.uuid" class="btn btn-danger">Delete</button> -->
-      </form>
-
+      <ng-include src="'/partials/player_form.html'" />
     </script>
   
   </div>

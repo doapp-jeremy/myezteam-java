@@ -11,6 +11,10 @@
 package com.myezteam.resource;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -27,6 +31,7 @@ import com.google.common.base.Strings;
 import com.myezteam.api.Event;
 import com.myezteam.api.Player;
 import com.myezteam.api.User;
+import com.myezteam.api.WsObject;
 import com.myezteam.application.AwsConfiguration;
 import com.myezteam.application.CollectionMapper;
 
@@ -46,6 +51,20 @@ public class PlayerResource {
 
   public PlayerResource(AwsConfiguration awsConfiguration) {
     this.collectionMapper = CollectionMapper.getInstance(awsConfiguration);
+  }
+
+  @Timed
+  @GET
+  public List<Player> get(@Auth User authUser) {
+    Map<String, String> conditions = new HashMap<String, String>();
+    conditions.put(WsObject.COLLECTION, Player.PLAYERS);
+    conditions.put(Player.USER_UUID, authUser.getUUID());
+    try {
+      return collectionMapper.list(Player.class, conditions);
+    } catch (ExecutionException | InstantiationException | IllegalAccessException e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
   }
 
   @Timed

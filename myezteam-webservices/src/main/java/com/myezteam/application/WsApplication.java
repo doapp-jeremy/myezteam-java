@@ -24,9 +24,10 @@ import com.codahale.dropwizard.setup.Environment;
 import com.google.common.collect.ImmutableSet;
 import com.myezteam.api.User;
 import com.myezteam.exception.WsExceptionMapper;
-import com.myezteam.resource.GenericCollectionResource;
 import com.myezteam.resource.EventResource;
+import com.myezteam.resource.GenericCollectionResource;
 import com.myezteam.resource.PersonaAuthResource;
+import com.myezteam.resource.PlayerResource;
 import com.myezteam.resource.TeamResource;
 import com.myezteam.resource.UserResource;
 
@@ -70,6 +71,7 @@ public class WsApplication extends Application<WsConfiguration> {
     jerseyEnv.register(new UserResource(auth));
     jerseyEnv.register(new TeamResource(awsConfiguration));
     jerseyEnv.register(new EventResource(awsConfiguration));
+    jerseyEnv.register(new PlayerResource(awsConfiguration));
     jerseyEnv.register(new GenericCollectionResource(awsConfiguration));
 
     // 0.6.2 - Allow CORS:

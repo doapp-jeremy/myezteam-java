@@ -238,9 +238,9 @@ function PlayerTypeCtrl($scope, Restangular) {
                   {name:'Sub'},
                   {name:'Member'}
                   ];
-  if (typeof $scope.player === 'undefined') {
-    $scope.player = {  };
-  }
+//  if (typeof $scope.player === 'undefined') {
+//    $scope.player = {  };
+//  }
   if (typeof $scope.player.player_type === 'undefined') {
     $scope.player.player_type = $scope.player_types[0].name;
   }

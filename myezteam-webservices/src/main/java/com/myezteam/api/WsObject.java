@@ -27,7 +27,7 @@ public class WsObject extends HashMap<String, Object> {
 
   private final String tableName;
 
-  private WsObject() {
+  public WsObject() {
     this(null, null);
   }
 

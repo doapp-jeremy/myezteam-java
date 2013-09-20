@@ -11,6 +11,7 @@
 package com.myezteam.resource;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.codahale.dropwizard.auth.Auth;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
@@ -56,24 +60,30 @@ public class TeamResource {
 
   @Timed
   @GET
-  @Path("/index")
-  @Produces(MediaType.TEXT_HTML)
-  public String index() {
-    return "<html ng-app>"
-        + "<head>"
-        + "<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js'></script>"
-        + "<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular-resource.min.js'></script>"
-        + "<script src='http://s3.amazonaws.com/static.myezteam.com/js/persona/controllers.js'></script>"
-        + "</head>"
-        + "<body ng-controller='TeamCtrl'>"
-        + "<h1>Teams</h1>"
-        + "<ul class='teams'>"
-        + "<li ng-repeat='team in teams' class='thumbnail'>"
-        + "{{team.name}}"
-        + "</li>"
-        + "</ul>"
-        + "</body>"
-        + "</html>";
+  @Path("/list/{uuids: .*}")
+  public Map<String, Team> getList(@Auth User authUser, @PathParam("uuids") String uuids) {
+    try {
+      // checkArgument(uuids.length > 0, "UUID list is empty");
+      Map<String, Condition> conditions = new HashMap<String, Condition>();
+      conditions.put(Team.COLLECTION,
+          new Condition().withComparisonOperator(ComparisonOperator.EQ).withAttributeValueList(new AttributeValue(Team.TEAMS)));
+      List<AttributeValue> uuidsAttributeValues = new ArrayList<AttributeValue>();
+      for (String uuid : uuids.split("/")) {
+        uuidsAttributeValues.add(new AttributeValue(uuid));
+      }
+      conditions.put(Team.UUID,
+          new Condition().withComparisonOperator(ComparisonOperator.IN).withAttributeValueList(uuidsAttributeValues));
+
+      Map<String, Team> teamsById = new HashMap<String, Team>();
+      List<Team> teams = collectionMapper.listWithConditions(Team.class, conditions);
+      for (Team team : teams) {
+        teamsById.put(team.getUUID(), team);
+      }
+      return teamsById;
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
   }
 
   @Timed
