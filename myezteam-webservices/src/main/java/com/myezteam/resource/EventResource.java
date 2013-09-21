@@ -125,4 +125,28 @@ public class EventResource {
       throw new WebApplicationException(e);
     }
   }
+
+  @Timed
+  @GET
+  @Path(UUID_PATH + "/responses/me")
+  public Response response(@Auth User authUser, @PathParam(UUID) String uuid) {
+    try {
+      return collectionMapper.get(new Response(uuid, authUser.getUUID()));
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
+  }
+
+  @Timed
+  @POST
+  @Path(UUID_PATH + "/responses")
+  public Response rsvp(@Auth User authUser, @PathParam(UUID) String uuid, @Valid Response response) {
+    try {
+      return collectionMapper.save(Response.newResponse(uuid, response));
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new WebApplicationException(e);
+    }
+  }
 }

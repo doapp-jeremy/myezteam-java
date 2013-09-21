@@ -192,6 +192,9 @@ public class CollectionMapper {
     Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
     for (Entry<String, Object> entry : wsObject.entrySet()) {
       Object value = entry.getValue();
+      if (value == null) {
+        continue;
+      }
       if (value instanceof String) {
         item.put(entry.getKey(), new AttributeValue((String) value));
       }

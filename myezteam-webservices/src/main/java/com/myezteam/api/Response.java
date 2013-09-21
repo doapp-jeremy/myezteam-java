@@ -10,6 +10,10 @@
  */
 package com.myezteam.api;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import com.google.common.base.Strings;
+
+
 /**
  * @author jeremy
  * 
@@ -19,26 +23,20 @@ public class Response extends WsObject {
 
   public static final String RESPONSES = "responses";
   public static final String EVENT_UUID = "event_uuid";
+  public static final String USER_UUID = "user_uuid";
 
   public Response() {
-    this(null);
+    this(null, null);
   }
 
   /**
    * @param collection
    * @param uuid
    */
-  public Response(String uuid) {
-    super(RESPONSES, uuid);
-  }
-
-  /**
-   * @param team2
-   * @param authUser
-   * @return
-   */
-  public static Response newEvent(Response event) {
-    return (Response) WsObject.newObject(event);
+  public Response(String eventUUID, String userUUID) {
+    super(RESPONSES, eventUUID + "-" + userUUID);
+    put(EVENT_UUID, eventUUID);
+    put(USER_UUID, userUUID);
   }
 
   /**
@@ -46,6 +44,27 @@ public class Response extends WsObject {
    */
   public String getEventUUID() {
     return (String) get(EVENT_UUID);
+  }
+
+  public String getUserUUID() {
+    return (String) get(USER_UUID);
+  }
+
+  /**
+   * @param uuid
+   * @param response
+   * @return
+   */
+  public static Response newResponse(String eventUUID, Response response) {
+    checkArgument(!Strings.isNullOrEmpty(response.getUserUUID()), "User UUID must be set");
+    Response rsvp = new Response(eventUUID, response.getUserUUID());
+    for (java.util.Map.Entry<String, Object> entry : response.entrySet()) {
+      Object value = entry.getValue();
+      if (value != null) {
+        rsvp.put(entry.getKey(), value);
+      }
+    }
+    return rsvp;
   }
 
 }

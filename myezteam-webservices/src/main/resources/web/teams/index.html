@@ -139,9 +139,10 @@
     <!-- CACHE FILE: event.html -->
     <script type="text/ng-template" id="event.html">
       <ul>
-        <li>Team {{team.name}}</li>
-        <li>Name {{event.name}}</li>
-        <li>Start {{event.start}}</li>
+        <li>Team <b>{{team.name}}</b></li>
+        <li>Name <b>{{event.name}}</b></li>
+        <li>Start <b>{{event.start}}</b></li>
+        <li>My RSVP <b>{{myResponse.response}}</b><th><a href="#/events/{{event.uuid}}/rsvp"><i class="icon-plus-sign"></i></a></th></li>
       </ul>
       <div>
         <tabset>
@@ -154,6 +155,23 @@
         </tabset>
       </div>
     </script>
+    
+    <!-- CACHE FILE: rsvp.html -->
+    <script type="text/ng-template" id="rsvp.html">
+      <h4>RSVP to {{event.name}}</h4>
+      <form name="rsvpForm">
+        <div class="control-group" ng-class="{error: rsvpForm.response.$invalid}" ng-controller="RsvpCtrl">
+          <label>Response</label>
+          <select id="rsvp" required name="response" ng-model="response.response" ng-options="rsvp.name as rsvp.name for rsvp in rsvps">
+          </select>
+        </div>
+        <br>
+        <a href="#/view/{{event.team_uuid}}/events/view/{{event.uuid}}" class="btn">Cancel</a>
+        <button ng-click="save()" ng-disabled="isClean() || rsvpForm.$invalid" class="btn btn-primary">Save</button>
+      </form>
+
+    </script>
+    
     
     <!-- CACHE FILE: rsvps.html.html -->
     <script type="text/ng-template" id="rsvps.html">

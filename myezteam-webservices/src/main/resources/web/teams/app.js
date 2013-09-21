@@ -1,4 +1,7 @@
+
+var currentUser = localStorage.getItem("email");
 var token = localStorage.getItem("token");
+
 angular.module('team', ['restangular','ui.bootstrap']).
   config(function($routeProvider, RestangularProvider) {
     $routeProvider.
@@ -112,12 +115,34 @@ angular.module('team', ['restangular','ui.bootstrap']).
           }
         }
       }).
+      when('/events/:uuid/rsvp', {controller: function($scope, $location, Restangular, event) {
+        $scope.event = event;
+        $scope.response = {};
+        $scope.save = function() {
+          $scope.response.user_uuid = currentUser;
+          // I'm not really sure why angular doesn't do this for me when creating a new one
+          var rsvp = document.getElementById("rsvp");
+          $scope.response.response = rsvp.options[rsvp.selectedIndex].text;
+          console.log($scope.response);
+          Restangular.all('events/' + $scope.event.uuid + "/responses").post($scope.response).then(function(event) {
+            $location.path('/' + team.uuid + "/events");
+          });
+        }
+      },
+      templateUrl:'rsvp.html',
+      resolve: {
+        event: function(Restangular, $route){
+          return Restangular.one('events', $route.current.params.uuid).get();
+        }
+      }
+    }).
       when('/view/:teamUUID/events/view/:eventUUID', {
-        controller: function($scope, $location, Restangular, team, event, responses, emails) {
+        controller: function($scope, $location, Restangular, team, event, responses, emails, myResponse) {
           $scope.team = team;
           $scope.event = event;
           $scope.responses = responses;
           $scope.emails = emails;
+          $scope.myResponse = myResponse;
         }, 
         templateUrl:'event.html',
         resolve: {
@@ -132,6 +157,9 @@ angular.module('team', ['restangular','ui.bootstrap']).
           },
           emails: function(Restangular, $route){
             return Restangular.all('events/' + $route.current.params.eventUUID + '/emails').getList();
+          },
+          myResponse: function(Restangular, $route){
+            return Restangular.all('events/' + $route.current.params.eventUUID + '/responses/me').getList();
           }
         }
       }).
