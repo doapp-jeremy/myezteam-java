@@ -1,0 +1,10 @@
+<h3>{{ team.name }}<a href="#/teams/edit/{{team.uuid}}"><i class="icon-pencil"></i></a></h3>
+<ul>
+	<li>Owner: {{team.owner_uuid}}</li>
+</ul>
+<div>
+	 <ng-include src="'partials/event_list.html'" />
+</div>
+<div>
+	 <ng-include src="'partials/player_list.html'" />
+</div>

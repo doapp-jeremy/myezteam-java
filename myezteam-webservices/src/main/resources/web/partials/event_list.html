@@ -1,0 +1,19 @@
+<h4>Events</h4>
+<input type="text" ng-model="search" class="search-query" placeholder="Search">
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Start</th>
+			<th>Location</th>
+			<th><a href="#/teams/view/{{team.uuid}}/events/new"><i class="icon-plus-sign"></i></a></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="event in events | filter:search | orderBy:'name'">
+			<td><a href="#/teams/view/{{team.uuid}}/events/view/{{event.uuid}}">{{event.name}}</a></td>
+			<td>{{event.start}}</td>
+			<td>{{event.location}}</td>
+		</tr>
+	</tbody>
+</table>

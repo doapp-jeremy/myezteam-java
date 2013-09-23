@@ -9,7 +9,7 @@ $(function() {
       // 2. Update your UI.
       $.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
         type: 'POST',
-        url: 'http://localhost:8080/application/auth/persona/login', // This is a URL on your website.
+        url: 'http://localhost:8080/auth/persona/login', // This is a URL on your website.
         data: JSON.stringify({assertion: assertion}),
         dataType: 'json',
         contentType: "application/json; charset=utf-8",
@@ -18,7 +18,7 @@ $(function() {
           console.log("Token: " + res.token);
           localStorage.setItem('email',res.email);
           localStorage.setItem('token',res.token);
-          window.location = '/teams/index.html';
+          window.location = '/';
         },
         error: function(xhr, status, err) {
           navigator.id.logout();

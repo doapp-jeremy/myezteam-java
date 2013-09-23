@@ -1,0 +1,20 @@
+<h4>Players</h4>
+<input type="text" ng-model="search" class="search-query" placeholder="Search">
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Player Type</th>
+			<th><a href="#/teams/view/{{team.uuid}}/players/new"><i class="icon-plus-sign"></i></a></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="player in players | filter:search | orderBy:'name'">
+			<td><a href="#/teams/view/{{team.uuid}}/players/view/{{player.uuid}}">{{player.name}}</a></td>
+			<td>{{player.email}}</td>
+			<td>{{player.player_type}}</td>
+			<td><a href="#/teams/view/{{team.uuid}}/players/edit/{{player.uuid}}"><i class="icon-pencil"></i></a></td>
+		</tr>
+	</tbody>
+</table>
